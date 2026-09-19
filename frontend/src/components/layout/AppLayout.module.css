@@ -1,0 +1,327 @@
+.shell {
+  display: flex;
+  height: 100vh;
+}
+
+.backdrop {
+  display: none;
+}
+
+.sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, var(--color-secondary-soft) 0%, var(--color-surface) 240px);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brandMark {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 10px color-mix(in srgb, var(--color-secondary) 38%, transparent));
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-size: 17px;
+}
+
+.orgName {
+  font: 500 var(--caption-10) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3);
+  gap: 2px;
+}
+
+.sidebarFooter {
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.sidebarFooter .logoutButton {
+  width: 100%;
+}
+
+.navLink {
+  position: relative;
+  /* Extra room on the right for the active marker below, so a long label
+     wraps the same whether or not its link is the current one. */
+  padding: 10px 32px 10px 14px;
+  border-radius: 100px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navLink:hover {
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary-ink);
+}
+
+.navLinkActive {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.navLinkActive:hover {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+/* The current page gets a small mint marker on its pill, so even the black
+   default has a spot of color where you are. */
+.navLinkActive::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: var(--color-tertiary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-tertiary) 30%, transparent);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.impersonationBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 12px var(--space-5);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-size: 13px;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.exitImpersonationButton {
+  background: transparent;
+  border: 1px solid var(--color-accent-contrast);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font: 700 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent-contrast);
+}
+
+.exitImpersonationButton:hover {
+  background: var(--color-accent-contrast);
+  color: var(--color-accent);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hamburgerButton {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.hamburgerButton span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--color-text);
+  margin: 0 auto;
+}
+
+/* Purely informational — who is signed in. Account changes live on the
+   Settings page, so this is deliberately not clickable. */
+.userBlock {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: default;
+  user-select: none;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-secondary-solid);
+  color: #fff;
+  font: 700 13px var(--font-display);
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 14px -4px color-mix(in srgb, var(--color-secondary) 45%, transparent);
+}
+
+.userText {
+  min-width: 0;
+}
+
+.userName {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userRole {
+  font: 500 var(--caption-10) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.languageSelect {
+  padding: 7px 10px 7px 12px;
+}
+
+.logoutButton {
+  background: none;
+  border: 1px solid var(--color-text);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font: 700 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.logoutButton:hover {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+/* Below this width, the sidebar becomes an off-canvas drawer opened by the
+   hamburger button, instead of squeezing into the layout. Covers both phone
+   and tablet widths. */
+@media (max-width: 900px) {
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 5, 0.45);
+    z-index: 150;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.3s var(--ease);
+    box-shadow: var(--shadow-md);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .hamburgerButton {
+    display: flex;
+  }
+
+  .topbarActions {
+    gap: 6px;
+  }
+
+  .topbarActions .languageSelect {
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  .logoutButton {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .userRole {
+    display: none;
+  }
+}
+
+/* The sidebar/topbar are already hidden via the "no-print" class, but the
+   viewport-height capping + internal scroll added above (so the sidebar
+   stays fixed-height instead of stretching to match page content) would
+   otherwise clip a long report to one screen's worth when printed — print
+   needs the full content in normal flow instead. */
+@media print {
+  .shell {
+    height: auto;
+  }
+
+  .main {
+    height: auto;
+    overflow: visible;
+  }
+
+  .content {
+    overflow: visible;
+  }
+}

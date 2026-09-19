@@ -1,0 +1,29 @@
+.stageRow {
+  margin-bottom: var(--space-4);
+}
+
+.stageRow:last-child {
+  margin-bottom: 0;
+}
+
+.stageLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.track {
+  height: 22px;
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-bg);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--gradient-progress);
+  border-radius: var(--radius-sm);
+  transition: width 0.3s ease;
+  min-width: 4px;
+}

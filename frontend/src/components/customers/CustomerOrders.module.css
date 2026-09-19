@@ -1,0 +1,33 @@
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  margin: 0;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+  margin: var(--space-4) 0;
+}
+
+.clear {
+  justify-self: start;
+}
+
+.pending {
+  color: var(--color-danger);
+}
+
+.reloading {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}

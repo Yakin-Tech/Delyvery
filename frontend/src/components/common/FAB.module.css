@@ -1,0 +1,31 @@
+.fab {
+  display: none;
+  position: fixed;
+  right: var(--space-5);
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  box-shadow: 0 14px 30px -6px color-mix(in srgb, var(--color-secondary) 55%, transparent), var(--shadow-md);
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+}
+
+.fab:active {
+  transform: scale(0.94);
+}
+
+.icon {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+@media (max-width: 900px) {
+  .fab {
+    display: flex;
+  }
+}

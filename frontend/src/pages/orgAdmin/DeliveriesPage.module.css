@@ -1,0 +1,63 @@
+.filters {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  margin-bottom: var(--space-2);
+}
+
+.filtersTitle {
+  font: 500 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clear:hover {
+  color: var(--color-text);
+}
+
+/* Four columns: the search box takes two of them, so the seven possible filters
+   sit in exactly two rows on a desktop screen. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.search {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .search {
+    grid-column: auto;
+  }
+}

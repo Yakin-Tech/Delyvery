@@ -1,0 +1,54 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font: 500 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.input {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 13px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-text);
+  background: var(--color-bg);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 18%, transparent);
+}
+
+.inputError {
+  border-color: var(--color-danger);
+}
+
+/* Both reset the label's mono/uppercase/tracked styling inherited from
+   .wrapper — a full sentence like "X usually gets 2 — you entered 10" needs
+   to read as normal prose, not shout in small caps. */
+.error {
+  color: var(--color-danger);
+  font: 400 13px var(--font-sans);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.inputWarn {
+  border-color: var(--color-warning);
+}
+
+.warn {
+  color: var(--color-warning);
+  font: 500 13px var(--font-sans);
+  text-transform: none;
+  letter-spacing: normal;
+}

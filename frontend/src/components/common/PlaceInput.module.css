@@ -1,0 +1,138 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* One cohesive field — the border/radius live here, not on the <input> or
+   the chevron button, so there's no visible seam between them (a separately
+   bordered chevron button next to a separately bordered input reads as two
+   little boxes glued together, not one control). */
+.inputRow {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  transition: border-color 0.2s ease;
+}
+
+.inputRowFocused {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 18%, transparent);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 10px 13px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.chevronButton {
+  flex-shrink: 0;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  border-left: 1px solid var(--color-border);
+}
+
+.chevronButton:hover {
+  color: var(--color-text);
+}
+
+.chevronIcon {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s ease;
+}
+
+.chevronIconOpen {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 20;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.suggestionRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.suggestionRow:hover,
+.suggestionRowActive {
+  background: var(--color-secondary-soft);
+}
+
+.suggestionButton {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  padding: 9px 10px;
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeButton {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-right: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+}
+
+.removeButton:hover {
+  background: var(--color-neutral-bg);
+  color: var(--color-danger);
+}
+
+.removeIcon {
+  width: 13px;
+  height: 13px;
+}
+
+.emptyRow {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

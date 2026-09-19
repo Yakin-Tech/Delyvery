@@ -1,0 +1,84 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+}
+
+/* The card is a size container so the figure can scale with the width it actually has:
+   a large amount (₹1707615.60) then fits on a narrow card instead of poking out of it. */
+.statCard {
+  padding: var(--space-4);
+  container-type: inline-size;
+}
+
+/* A small colored tab on the top edge plus a soft wash of the same color in
+   the corner. The tone cycles indigo → mint → ink across a row, so a page of
+   headline numbers has some rhythm without turning into a rainbow. The
+   element selector (div.statCard) outranks the global .card background no
+   matter which stylesheet loads first. */
+div.statCard {
+  --tone: var(--color-secondary);
+  --wash: var(--wash-strong);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(150px 100px at 100% 0%, color-mix(in srgb, var(--tone) var(--wash), transparent), transparent 72%),
+    var(--color-surface);
+}
+
+div.statCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--space-4);
+  width: 30px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--tone);
+}
+
+.grid > div.statCard:nth-child(3n + 2) {
+  --tone: var(--color-tertiary);
+}
+
+/* A wash of black just reads as a grey smudge, so the ink card keeps only
+   its tab and a barely-there tint. */
+.grid > div.statCard:nth-child(3n) {
+  --tone: var(--color-text);
+  --wash: var(--wash-faint);
+}
+
+.statCard .mutedText,
+.statCard > div:first-child {
+  font: 500 var(--caption-10) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-size: clamp(17px, 15cqi, 26px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin-top: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+/* Phones: two cards per row instead of one wide card each, so a page of headline numbers stays short. */
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .statCard {
+    padding: var(--space-3);
+  }
+
+  .statValue {
+    font-size: 22px;
+    font-size: clamp(16px, 15cqi, 22px);
+  }
+}

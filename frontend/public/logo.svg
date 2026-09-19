@@ -1,0 +1,19 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Delyver icon">
+  <!-- top face -->
+  <polygon points="56,14 86,32 56,50 26,32" fill="#3FD9A8" />
+  <!-- left face -->
+  <polygon points="26,32 56,50 56,82 26,64" fill="#5B4CF0" />
+  <!-- right face -->
+  <polygon points="86,32 56,50 56,82 86,64" fill="#3A2DB8" />
+
+  <!-- checkmark badge -->
+  <circle cx="82" cy="70" r="15" fill="#000000" stroke="#FFFFFF" stroke-width="3" />
+  <path
+    d="M75 70 L80 75 L90 63"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

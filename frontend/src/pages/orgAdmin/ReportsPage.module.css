@@ -1,0 +1,222 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+/* The report list is one card with a block per section. A section is a bold title with a
+   dot; its reports sit indented under a guide line, so the title and what it contains read
+   as two different things. */
+.nav {
+  position: sticky;
+  top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+}
+
+.group + .group {
+  border-top: 1px solid var(--color-border);
+}
+
+.groupLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-2);
+  font: 700 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.groupLabel::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+}
+
+/* The guide line runs down from the middle of the title's dot. */
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 10px;
+  padding-left: var(--space-2);
+  border-left: 2px solid var(--color-border);
+}
+
+.navItem {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: 500 13px var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.navItem:hover {
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary-ink);
+}
+
+.navItemActive,
+.navItemActive:hover {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 600;
+}
+
+.content {
+  min-width: 0;
+}
+
+.reportHeader {
+  margin-bottom: var(--space-4);
+}
+
+.reportTitle {
+  margin: 0 0 4px;
+}
+
+/* Filters: at most two rows of up to four, with "clear filters" beside them. */
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.filterRows {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* As many equal columns as fit at a readable width, so a select never gets squeezed into
+   truncating its value; a report has at most four filters in a row, so on a wide screen
+   that is still two rows. */
+.filterRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.clearFilters {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* Shown only on paper: what the report covers, since the filters themselves are hidden. */
+.printSummary {
+  display: none;
+  margin: var(--space-2) 0 0;
+  font-size: 12px;
+}
+
+/* Narrow screens: the report list becomes a sideways-scrolling strip above the report.
+   Each section keeps its title, shown inline in front of its reports, with a divider
+   between sections. */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .nav {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+    overflow-x: auto;
+    padding: 0 0 var(--space-2);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .group {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0;
+  }
+
+  .group + .group {
+    padding-left: var(--space-4);
+    border-top: 0;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .groupLabel {
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  .items {
+    flex-direction: row;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    border-left: 0;
+  }
+
+  .navItem {
+    white-space: nowrap;
+    border: 1px solid var(--color-border);
+    border-radius: 100px;
+  }
+
+  .navItem:not(.navItemActive) {
+    background: var(--color-surface);
+  }
+}
+
+/* Narrow screens: "clear filters" goes underneath the filters instead of beside them. */
+@media (max-width: 900px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .clearFilters {
+    align-self: flex-start;
+  }
+}
+
+@media print {
+  .layout {
+    display: block;
+  }
+
+  .printSummary {
+    display: block;
+  }
+}

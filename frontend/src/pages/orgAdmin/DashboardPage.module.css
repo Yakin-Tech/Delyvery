@@ -1,0 +1,72 @@
+.widgetRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: 32px;
+}
+
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.widgetTitle {
+  margin: 0;
+  font-size: 14px;
+}
+
+.alertCard {
+  border-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface));
+}
+
+.bigNumber {
+  font-family: var(--font-display);
+  font-size: 34px;
+  margin: 0;
+}
+
+.routeStatusRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.unloggedList {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.modeList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modeRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+/* Swipeable card layout on mobile: a horizontally-scrolling, snap-aligned
+   row instead of the grid — a small-business owner checking the dashboard
+   one-handed on their phone swipes between widgets instead of scrolling a
+   long vertical stack of tiny cards. */
+@media (max-width: 720px) {
+  .widgetRow {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .widget {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+}

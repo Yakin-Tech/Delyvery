@@ -1,0 +1,59 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font: 700 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+/* Resolved / good state — mint tint with a leading checkmark. The mark means
+   status is never carried by hue alone (a colorblind or low-vision reader
+   still gets a shape cue, same as .warning's triangle and .danger's dot
+   below). */
+.success {
+  background: var(--color-tertiary-soft);
+  color: var(--color-tertiary-ink);
+  border-color: color-mix(in srgb, var(--color-tertiary) 45%, transparent);
+}
+
+.success::before {
+  content: "\2713";
+  margin-right: 6px;
+  font-size: 10px;
+}
+
+/* In-between/caution state — amber tint with a triangle glyph, the same
+   shape-plus-color pairing .danger uses. */
+.warning {
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface));
+  color: var(--color-warning-ink);
+  border-color: color-mix(in srgb, var(--color-warning) 55%, transparent);
+}
+
+.warning::before {
+  content: "\25b2";
+  margin-right: 6px;
+  font-size: 8px;
+}
+
+/* Needs-attention state — red tint with a leading dot */
+.danger {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  color: var(--color-danger-ink);
+  border-color: color-mix(in srgb, var(--color-danger) 50%, transparent);
+}
+
+.danger::before {
+  content: "\25cf";
+  margin-right: 6px;
+  font-size: 8px;
+}
+
+.neutral {
+  background: transparent;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}

@@ -1,0 +1,18 @@
+/* One row on a desktop screen (search, then the selects), wrapping onto a second
+   on narrower ones. */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.filters > * {
+  flex: 1 1 170px;
+  min-width: 0;
+}
+
+.filters > .search {
+  flex: 2 1 260px;
+}

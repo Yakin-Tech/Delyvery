@@ -1,0 +1,223 @@
+:root {
+  /* Base palette — black and white lead. The greys carry a faint cool cast so
+     they sit naturally beside the two brand colors below instead of reading
+     as flat, lifeless neutrals. */
+  --color-bg: #f6f6fb;
+  --color-surface: #ffffff;
+  --color-border: #e3e3ee;
+  --color-text: #0d0d14;
+  --color-text-muted: #6b6b7b;
+  --color-neutral-bg: #efeff7;
+
+  /* Status colors. *-ink is the readable text shade on a tinted (soft)
+     background; *-solid is a fill that carries white text and is the same in
+     light and dark mode. */
+  --color-danger: #d3323c;
+  --color-danger-ink: #b3202b;
+  --color-danger-solid: #c62a35;
+  --color-warning: #9f6300;
+  --color-warning-ink: #7a4d00;
+  --color-warning-solid: #9f6300;
+  --color-success-solid: #08805c;
+
+  /* Brand colors — the "color" in a black-and-white app. Secondary (electric
+     indigo) is the lead: focus rings, hover tints, links, the first chart
+     series. Tertiary (fresh mint) is the supporting highlight and also stands
+     for "paid / success". The -soft tints are derived from the surface so they
+     adapt to dark mode on their own. --color-secondary-solid is a fixed indigo
+     for fills that carry white text (the avatar), since --color-secondary
+     itself lightens in dark mode. */
+  --color-secondary: #5b4cf0;
+  --color-secondary-ink: #3d30c4;
+  --color-secondary-solid: #5b4cf0;
+  --color-secondary-soft: color-mix(in srgb, var(--color-secondary) 10%, var(--color-surface));
+  --color-tertiary: #0cad7c;
+  --color-tertiary-ink: #07684a;
+  --color-tertiary-soft: color-mix(in srgb, var(--color-tertiary) 12%, var(--color-surface));
+
+  --color-focus: var(--color-secondary);
+
+  /* Progress bars fill with a barely-there ramp of the one brand indigo — a
+     lighter start easing into the full color — deliberately not a two-color
+     gradient. */
+  --gradient-progress: linear-gradient(90deg, color-mix(in srgb, var(--color-secondary) 72%, var(--color-surface)), var(--color-secondary));
+
+  /* Soft color washes behind the page (see body in global.css), and how
+     strong the corner wash on a stat card is. */
+  --glow-a: color-mix(in srgb, var(--color-secondary) 13%, transparent);
+  --glow-b: color-mix(in srgb, var(--color-tertiary) 11%, transparent);
+  --wash-strong: 13%;
+  --wash-faint: 4%;
+
+  /* Chart series. Literal values, deliberately not derived from the brand
+     tokens above: a chart has to keep its slices apart, and Sunlight mode
+     (which flattens the brand colors to black) must not turn every bar black.
+     Each is ~3:1 or better against a white card. */
+  --chart-1: #5b4cf0;
+  --chart-2: #0cad7c;
+  --chart-3: #15151f;
+  --chart-4: #867af8;
+  --chart-5: #e18f0e;
+  --chart-6: #0b7f8c;
+  --chart-7: #8c8c9e;
+
+  /* The primary fill: black in light mode, near-white in dark mode (see the
+     dark block below). Primary buttons, the active nav and tab pills and other
+     filled states read this. It is named "accent" from when a user could pick
+     one; that option is gone, so there is exactly one value per mode. */
+  --color-accent: #000000;
+  --color-accent-hover: #000000;
+  --color-accent-contrast: #ffffff;
+
+  /* The three faces of the cube logo, light → dark, giving it a 3D "lit from
+     above" look: a mint lid over indigo sides, with a black check badge.
+     --logo-badge-ink is the checkmark's stroke color (and the ring around it):
+     dark shapes need a light ink and vice versa, so it flips together with
+     the badge fill in dark mode below. */
+  --logo-face-top: #3fd9a8;
+  --logo-face-left: #5b4cf0;
+  --logo-face-right: #3a2db8;
+  --logo-badge: #000000;
+  --logo-badge-ink: #ffffff;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  --shadow-sm: 0 1px 2px rgba(22, 18, 66, 0.05), 0 8px 20px -8px rgba(22, 18, 66, 0.08);
+  --shadow-md: 0 25px 60px rgba(22, 18, 66, 0.16);
+
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-display: "Space Grotesk", var(--font-sans);
+  --font-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+/* Dark mode — toggled via data-theme="dark" on <html>. The brand colors step up
+   in lightness so they keep their contrast on a dark surface. A black primary
+   would vanish against an already-dark surface, so it inverts to near-white,
+   and the logo badge flips to near-white with dark ink so its checkmark still
+   reads. */
+:root[data-theme="dark"] {
+  --color-bg: #0b0b10;
+  --color-surface: #16161d;
+  --color-border: #2a2a36;
+  --color-text: #f2f2f6;
+  --color-text-muted: #9a9aa8;
+  --color-neutral-bg: #20202a;
+  --color-danger: #ff7a6b;
+  --color-danger-ink: #ff9c90;
+  --color-warning: #d9a441;
+  --color-warning-ink: #f0c674;
+
+  --color-accent: #f2f2f6;
+  --color-accent-hover: #d9d9e0;
+  --color-accent-contrast: #0b0b10;
+  --logo-face-top: #5eeabc;
+  --logo-face-left: #8a7dff;
+  --logo-face-right: #5646d8;
+  --logo-badge: #f2f2f6;
+  --logo-badge-ink: #141414;
+
+  --color-secondary: #9a8fff;
+  --color-secondary-ink: #b9b0ff;
+  --color-tertiary: #34dfa5;
+  --color-tertiary-ink: #7ef0c9;
+
+  --glow-a: color-mix(in srgb, var(--color-secondary) 17%, transparent);
+  --glow-b: color-mix(in srgb, var(--color-tertiary) 12%, transparent);
+
+  --chart-1: #9a8fff;
+  --chart-2: #34dfa5;
+  --chart-3: #e9e9f2;
+  --chart-4: #6f63e0;
+  --chart-5: #f5b84f;
+  --chart-6: #3cc4d4;
+  --chart-7: #6e6e80;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 25px 60px rgba(0, 0, 0, 0.55);
+}
+
+/* Sunlight mode — a manual, maximum-contrast override for reading a phone
+   screen in direct daylight (the Staff app's Daily Run Sheet). Deliberately
+   overrides dark mode rather than combining with it: a squint in bright sun
+   should always get the same pure black-on-white result regardless of what
+   theme is otherwise set. That
+   includes the brand colors — tints and gradients drop out, and the solid
+   status fills go black, so state is carried by the labels and shapes rather
+   than by hue. Chart colors are left alone: they are distinct hues on
+   purpose. No ambient-light auto-detect — the Ambient Light Sensor API is
+   deprecated/unsupported in current major browsers, so this is toggled by
+   hand from the run sheet. */
+:root[data-sunlight="true"] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-text: #000000;
+  --color-text-muted: #1a1a1a;
+  --color-accent: #000000;
+  --color-accent-hover: #262626;
+  --color-accent-contrast: #ffffff;
+
+  --color-secondary: #000000;
+  --color-secondary-ink: #000000;
+  --color-secondary-soft: #ffffff;
+  --color-tertiary: #000000;
+  --color-tertiary-ink: #000000;
+  --color-tertiary-soft: #ffffff;
+  --color-danger-ink: #000000;
+  --color-warning-ink: #000000;
+  --color-success-solid: #000000;
+  --color-warning-solid: #000000;
+  --color-danger-solid: #000000;
+  --color-secondary-solid: #000000;
+  --gradient-progress: linear-gradient(#000000, #000000);
+  --glow-a: transparent;
+  --glow-b: transparent;
+  --wash-strong: 0%;
+  --wash-faint: 0%;
+
+  /* The logo goes back to shades of black too. */
+  --logo-face-top: #8a8a8a;
+  --logo-face-left: #4d4d4d;
+  --logo-face-right: #262626;
+  --logo-badge: #000000;
+  --logo-badge-ink: #ffffff;
+}
+
+/* Type scale for the small monospace captions (input labels, table headers, stat
+   labels...). The Indian-language scripts have no glyphs in the monospace Latin
+   face and their marks are tiny at 10-11px, so they get the body face and a larger
+   size; letter-spacing is dropped for them too, since spacing pulls the joined
+   letters of a word apart. */
+:root {
+  --caption-10: 10px;
+  --caption-11: 11px;
+}
+
+:root:lang(hi),
+:root:lang(ta),
+:root:lang(te),
+:root:lang(kn),
+:root:lang(ml) {
+  --caption-10: 12px;
+  --caption-11: 12.5px;
+  --font-mono: var(--font-sans);
+}
+
+:root:lang(hi) *,
+:root:lang(ta) *,
+:root:lang(te) *,
+:root:lang(kn) *,
+:root:lang(ml) * {
+  letter-spacing: normal !important;
+}

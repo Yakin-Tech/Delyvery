@@ -1,0 +1,83 @@
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  text-align: left;
+  padding: var(--space-3);
+  background: color-mix(in srgb, var(--color-secondary-soft) 40%, var(--color-surface));
+  color: var(--color-text-muted);
+  font: 500 var(--caption-10) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--color-secondary-soft);
+}
+
+.cardList {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rowCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cardField {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 14px;
+}
+
+.cardLabel {
+  color: var(--color-text-muted);
+  font: 500 var(--caption-10) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+.cardValue {
+  text-align: right;
+}
+
+/* Thumb-friendly on a phone: a horizontally-scrolled table with many
+   columns (customers, deliveries, pending dues, etc.) is hard to scan
+   one-handed — stacked cards read top-to-bottom instead. */
+@media (max-width: 640px) {
+  .tableWrapper {
+    display: none;
+  }
+
+  .cardList {
+    display: flex;
+  }
+}

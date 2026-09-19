@@ -1,0 +1,86 @@
+.label {
+  display: block;
+  margin: var(--space-3) 0 var(--space-1);
+  font: 500 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Each option carries its status color as a dot, selected or not, and fills
+   with it once selected — paid mint, part-paid amber, not-paid red. The label
+   still says which is which, so the color is a second cue, not the only one. */
+.paid {
+  --status: var(--color-success-solid);
+}
+
+.partial {
+  --status: var(--color-warning-solid);
+}
+
+.pending {
+  --status: var(--color-danger-solid);
+}
+
+.button::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status, currentColor);
+}
+
+.button:hover:not(.active) {
+  border-color: var(--status, var(--color-text));
+}
+
+.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.active::before {
+  background: currentColor;
+}
+
+.paid.active,
+.partial.active,
+.pending.active {
+  border-color: var(--status);
+  background: var(--status);
+  color: #fff;
+}
+
+.keyHint {
+  font: 500 var(--caption-10) var(--font-mono);
+  opacity: 0.6;
+}

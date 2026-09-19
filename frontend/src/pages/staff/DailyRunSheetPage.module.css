@@ -1,0 +1,325 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.progressHeader {
+  margin-bottom: var(--space-4);
+}
+
+.progressLabel {
+  display: block;
+  margin-top: var(--space-2);
+  font: 700 12px var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.formWarning {
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.cardOuter {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Swipe-right (deliver+paid) hints green, swipe-left (skip) hints amber —
+   painted behind the card so the color shows through as the card is dragged. */
+.hintRight {
+  background: var(--color-success-solid);
+}
+
+.hintLeft {
+  background: var(--color-warning-solid);
+}
+
+.swipeHint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* Brief confirmation flourish when a card is marked delivered — a checkmark
+   pop plus a small scale pulse on the card itself, cleared ~700ms later by
+   the page (see recentlyDeliveredId in DailyRunSheetPage.jsx). */
+.cardJustDelivered .card {
+  animation: cardPulse 0.5s var(--ease);
+}
+
+@keyframes cardPulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.deliveredCheck {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  transform: translateY(-50%);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-success-solid);
+  animation: checkPop 0.7s var(--ease);
+  pointer-events: none;
+}
+
+@keyframes checkPop {
+  0% { opacity: 0; transform: translateY(-50%) scale(0.5); }
+  30% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-50%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardJustDelivered .card,
+  .deliveredCheck {
+    animation: none;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  text-align: left;
+  width: 100%;
+  min-height: 76px;
+  touch-action: pan-y;
+  transition: border-color 0.2s ease;
+}
+
+.cardMissed {
+  border-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface));
+}
+
+.customerName {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.cardMeta {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.cardStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.missedDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-warning-solid);
+  display: inline-block;
+}
+
+.statusButtons {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: 16px;
+}
+
+.statusButton {
+  flex: 1;
+  padding: 16px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-weight: 700;
+  font-size: 14px;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Same idea as the delivery form's payment buttons: a status-colored dot on
+   each option, and the option fills with its color when selected. */
+.paid {
+  --status: var(--color-success-solid);
+}
+
+.partial {
+  --status: var(--color-warning-solid);
+}
+
+.pending {
+  --status: var(--color-danger-solid);
+}
+
+.statusButton::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--status, currentColor);
+  vertical-align: middle;
+}
+
+.statusButtonActive {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.statusButtonActive::before {
+  background: currentColor;
+}
+
+.paid.statusButtonActive,
+.partial.statusButtonActive,
+.pending.statusButtonActive {
+  border-color: var(--status);
+  background: var(--status);
+  color: #fff;
+}
+
+.bigInput input {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.deliverButtonRow {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.deliverButton {
+  flex: 1;
+  padding: 18px;
+  font-size: 16px;
+}
+
+.sunlightToggle {
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font: 700 var(--caption-11) var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.sunlightToggleActive {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border-color: var(--color-accent);
+}
+
+.syncBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-bg);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.conflictBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+/* Sunlight mode: forced maximum contrast + larger tap targets/text for a
+   phone screen in direct daylight, scoped to this page's own elements (the
+   global palette override lives in variables.css under the same attribute).
+   Manual toggle only — see the DailyRunSheetPage comment on why there's no
+   ambient-light auto-detect. */
+:global([data-sunlight="true"]) .customerName {
+  font-size: 20px;
+}
+
+:global([data-sunlight="true"]) .card {
+  border-width: 2px;
+  min-height: 88px;
+}
+
+:global([data-sunlight="true"]) .cardMeta {
+  color: #000;
+  font-weight: 600;
+}
+
+.celebrationOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 200;
+}
+
+.celebrationCard {
+  max-width: 360px;
+  text-align: center;
+  animation: celebrationPop 0.4s var(--ease);
+}
+
+.celebrationEmoji {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: var(--space-3);
+  animation: celebrationBounce 0.8s var(--ease);
+}
+
+@keyframes celebrationPop {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes celebrationBounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+  55% { transform: translateY(0); }
+  75% { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebrationCard,
+  .celebrationEmoji {
+    animation: none;
+  }
+}

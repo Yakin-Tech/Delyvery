@@ -1,0 +1,75 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.sheet {
+  background: linear-gradient(var(--color-secondary), var(--color-secondary)) top left / 100% 4px no-repeat, var(--color-surface);
+  border-radius: 25px 25px 0 0;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: slideUp 0.28s var(--ease);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+.grabber {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border);
+  margin: var(--space-3) auto 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5) var(--space-4);
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.closeButton {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.body {
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+.footer {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
