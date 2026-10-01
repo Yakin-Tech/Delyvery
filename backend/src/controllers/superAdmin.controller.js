@@ -14,6 +14,16 @@ async function countWhere(table, column, value) {
   return count || 0;
 }
 
+// Same as countWhere, but excludes Trashed customers (see trash.controller.js)
+// — a deleted customer shouldn't inflate a platform/org "how many customers"
+// stat. Not folded into countWhere itself since that's also used for tables
+// (deliveries) that have no deleted_at column.
+async function countActiveCustomers(orgId) {
+  const { count, error } = await supabase.from('customers').select('*', { count: 'exact', head: true }).eq('organization_id', orgId).is('deleted_at', null);
+  if (error) throw new ApiError(500, error.message);
+  return count || 0;
+}
+
 const stats = asyncHandler(async (req, res) => {
   const [
     { count: totalOrgs },
@@ -28,8 +38,8 @@ const stats = asyncHandler(async (req, res) => {
     supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('status', 'trial'),
     supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('status', 'suspended'),
-    supabase.from('customers').select('*', { count: 'exact', head: true }),
-    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'staff'),
+    supabase.from('customers').select('*', { count: 'exact', head: true }).is('deleted_at', null),
+    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'staff').is('deleted_at', null),
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'org_admin'),
   ]);
 
@@ -72,7 +82,7 @@ const listOrganizations = asyncHandler(async (req, res) => {
 
   const augmented = await Promise.all(organizations.map(async (org) => {
     const [customerCount, lastDelivery] = await Promise.all([
-      countWhere('customers', 'organization_id', org.id),
+      countActiveCustomers(org.id),
       supabase.from('deliveries').select('created_at').eq('organization_id', org.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
     ]);
     return {
@@ -130,8 +140,8 @@ const getOrganization = asyncHandler(async (req, res) => {
 
   const [admins, customerCount, staffCount, deliveryCount, recentAuditLog] = await Promise.all([
     supabase.from('users').select('id, name, phone, status, created_at').eq('organization_id', organization.id).eq('role', 'org_admin').order('created_at', { ascending: true }).then(unwrap),
-    countWhere('customers', 'organization_id', organization.id),
-    supabase.from('users').select('*', { count: 'exact', head: true }).eq('organization_id', organization.id).eq('role', 'staff').then(({ count }) => count || 0),
+    countActiveCustomers(organization.id),
+    supabase.from('users').select('*', { count: 'exact', head: true }).eq('organization_id', organization.id).eq('role', 'staff').is('deleted_at', null).then(({ count }) => count || 0),
     countWhere('deliveries', 'organization_id', organization.id),
     supabase.from('audit_logs').select('*, user:users(id, name)').eq('organization_id', organization.id).order('created_at', { ascending: false }).limit(20).then(unwrap),
   ]);

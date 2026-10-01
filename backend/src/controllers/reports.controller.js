@@ -218,7 +218,7 @@ async function computePendingAging(req) {
       { ...filters, paymentStatus: null },
     ).then(unwrap),
     includeOpening
-      ? filterCustomersByAssignment(supabase.from('customers').select('id, opening_balance').eq('organization_id', orgId).gt('opening_balance', 0), filters).then(unwrap)
+      ? filterCustomersByAssignment(supabase.from('customers').select('id, opening_balance').eq('organization_id', orgId).is('deleted_at', null).gt('opening_balance', 0), filters).then(unwrap)
       : Promise.resolve([]),
   ]);
 
@@ -249,7 +249,7 @@ async function computeCustomerInactivity(req) {
   const filters = reportFilters(req);
 
   const [customers, deliveries] = await Promise.all([
-    filterCustomersByAssignment(supabase.from('customers').select('id, name, phone, assigned_staff:users!assigned_staff_id(name)').eq('organization_id', orgId).eq('status', 'active'), filters).then(unwrap),
+    filterCustomersByAssignment(supabase.from('customers').select('id, name, phone, assigned_staff:users!assigned_staff_id(name)').eq('organization_id', orgId).eq('status', 'active').is('deleted_at', null), filters).then(unwrap),
     supabase.from('deliveries').select('customer_id, delivery_date').eq('organization_id', orgId).order('delivery_date', { ascending: false }).then(unwrap),
   ]);
 
@@ -279,7 +279,7 @@ async function computeNewCustomerAcquisition(req) {
   const filters = reportFilters(req);
 
   const customers = unwrap(await filterCustomersByAssignment(
-    supabase.from('customers').select('created_at').eq('organization_id', orgId).gte('created_at', since),
+    supabase.from('customers').select('created_at').eq('organization_id', orgId).is('deleted_at', null).gte('created_at', since),
     filters,
   ));
 
@@ -343,7 +343,7 @@ async function computeStaffProductivity(req) {
   const [deliveries, staffList] = await Promise.all([
     filterDeliveries(supabase.from('deliveries').select('staff_id, delivery_date, delivery_time, total_amount, amount_paid')
       .eq('organization_id', orgId).gte('delivery_date', from).lte('delivery_date', to), reportFilters(req)).then(unwrap),
-    supabase.from('users').select('id, name').eq('organization_id', orgId).eq('role', 'staff').then(unwrap),
+    supabase.from('users').select('id, name').eq('organization_id', orgId).eq('role', 'staff').is('deleted_at', null).then(unwrap),
   ]);
 
   const byStaffDay = new Map();
@@ -466,7 +466,7 @@ async function computeZonePerformance(req) {
 
   const customers = unwrap(await supabase.from('customers')
     .select('id, opening_balance, credit_balance, assigned_staff:users!assigned_staff_id(assigned_zone)')
-    .eq('organization_id', orgId).eq('status', 'active'));
+    .eq('organization_id', orgId).eq('status', 'active').is('deleted_at', null));
   const customerIds = customers.map((c) => c.id);
   if (customerIds.length === 0) return [];
 

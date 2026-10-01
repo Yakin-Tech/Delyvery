@@ -625,7 +625,7 @@ const remove = asyncHandler(async (req, res) => {
 const todayBoard = asyncHandler(async (req, res) => {
   const today = todayISODate();
 
-  let customerQuery = supabase.from('customers').select('*').eq('organization_id', req.user.organizationId).eq('status', 'active');
+  let customerQuery = supabase.from('customers').select('*').eq('organization_id', req.user.organizationId).eq('status', 'active').is('deleted_at', null);
   if (!req.organization.staff_sees_all_customers) {
     customerQuery = customerQuery.eq('assigned_staff_id', req.user.id);
   }

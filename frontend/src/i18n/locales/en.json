@@ -164,6 +164,7 @@
       "assignedVehicle": "Assigned vehicle"
     },
     "detail": {
+      "notFound": "Customer not found.",
       "editCustomer": "Edit customer",
       "deleteCustomer": "Delete customer",
       "deleteConfirm": "Move {{name}} to Trash? You can restore them later.",

@@ -164,6 +164,7 @@
       "assignedVehicle": "असाइन किया गया वाहन"
     },
     "detail": {
+      "notFound": "ग्राहक नहीं मिला।",
       "editCustomer": "ग्राहक संपादित करें",
       "deleteCustomer": "ग्राहक हटाएं",
       "deleteConfirm": "{{name}} को ट्रैश में भेजें? आप उन्हें बाद में वापस ला सकते हैं।",

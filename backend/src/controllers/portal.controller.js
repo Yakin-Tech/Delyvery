@@ -15,6 +15,7 @@ const getPortalData = asyncHandler(async (req, res) => {
   const customer = unwrap(await supabase.from('customers')
     .select('id, name, opening_balance, credit_balance, preferred_language, organization:organizations(default_language)')
     .eq('portal_token', req.params.token)
+    .is('deleted_at', null)
     .maybeSingle());
   if (!customer) throw ApiError.notFound('This link is no longer valid.');
 

@@ -34,7 +34,7 @@ const create = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('A payment cannot be dated in the future');
   }
 
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', customer_id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', customer_id).is('deleted_at', null).maybeSingle());
   if (!customer || customer.organization_id !== orgId) {
     throw ApiError.badRequest('Customer not found in your organization');
   }
@@ -43,7 +43,7 @@ const create = asyncHandler(async (req, res) => {
     if (req.organization.delivery_model !== 'vehicle_eod') {
       throw ApiError.badRequest('Vehicles are not used by this organization');
     }
-    const vehicle = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', vehicle_id).maybeSingle());
+    const vehicle = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', vehicle_id).is('deleted_at', null).maybeSingle());
     if (!vehicle || vehicle.organization_id !== orgId) throw ApiError.badRequest('Vehicle not found in your organization');
   }
 

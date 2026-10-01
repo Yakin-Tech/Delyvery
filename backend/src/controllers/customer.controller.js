@@ -326,7 +326,7 @@ const reorder = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('customer_ids must be a non-empty array');
   }
 
-  const rows = unwrap(await supabase.from('customers').select('id, organization_id').in('id', customer_ids));
+  const rows = unwrap(await supabase.from('customers').select('id, organization_id').in('id', customer_ids).is('deleted_at', null));
   if (rows.length !== customer_ids.length || rows.some((r) => r.organization_id !== req.user.organizationId)) {
     throw ApiError.badRequest('One or more customers were not found in your organization');
   }
@@ -342,7 +342,7 @@ const reorder = asyncHandler(async (req, res) => {
 // Shared shape-check for the two bulk actions below: every id must exist and
 // belong to this org, same guard as reorder() above.
 async function assertAllInOrg(req, customerIds) {
-  const rows = unwrap(await supabase.from('customers').select('id, organization_id').in('id', customerIds));
+  const rows = unwrap(await supabase.from('customers').select('id, organization_id').in('id', customerIds).is('deleted_at', null));
   if (rows.length !== customerIds.length || rows.some((r) => r.organization_id !== req.user.organizationId)) {
     throw ApiError.badRequest('One or more customers were not found in your organization');
   }

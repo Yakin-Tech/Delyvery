@@ -16,7 +16,7 @@ function currentStock(movements) {
 }
 
 const listForProduct = asyncHandler(async (req, res) => {
-  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.productId).maybeSingle());
+  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.productId).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, product);
 
   const movements = unwrap(await supabase
@@ -30,7 +30,7 @@ const listForProduct = asyncHandler(async (req, res) => {
 });
 
 const summary = asyncHandler(async (req, res) => {
-  const products = unwrap(await supabase.from('products').select('id, name, unit_of_measure, reorder_level').eq('organization_id', requireOrgId(req)).eq('is_active', true));
+  const products = unwrap(await supabase.from('products').select('id, name, unit_of_measure, reorder_level').eq('organization_id', requireOrgId(req)).eq('is_active', true).is('deleted_at', null));
   const movements = unwrap(await supabase.from('stock_movements').select('product_id, movement_type, quantity').eq('organization_id', requireOrgId(req)));
 
   const byProduct = new Map();
@@ -54,7 +54,7 @@ const summary = asyncHandler(async (req, res) => {
 });
 
 const create = asyncHandler(async (req, res) => {
-  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.body.product_id).maybeSingle());
+  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.body.product_id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, product);
 
   const movement = unwrap(await supabase.from('stock_movements').insert({

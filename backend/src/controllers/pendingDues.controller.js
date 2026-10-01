@@ -19,7 +19,7 @@ function daysAgo(dateStr) {
 // deliveries, minus any credit notes issued to them and any credit balance
 // they're carrying — see computeTotalDue.
 async function computePendingDues({ organizationId, customerFilters = {}, search, minAgeDays, sort }) {
-  let customerQuery = supabase.from('customers').select('*, assigned_staff:users!assigned_staff_id(id, name), assigned_vehicle:vehicles(id, vehicle_number, driver_name)').eq('organization_id', organizationId);
+  let customerQuery = supabase.from('customers').select('*, assigned_staff:users!assigned_staff_id(id, name), assigned_vehicle:vehicles(id, vehicle_number, driver_name)').eq('organization_id', organizationId).is('deleted_at', null);
   for (const [field, value] of Object.entries(customerFilters)) {
     customerQuery = customerQuery.eq(field, value);
   }
@@ -313,6 +313,7 @@ const listDeliveries = asyncHandler(async (req, res) => {
       const matches = unwrap(await supabase.from('customers')
         .select('id')
         .eq('organization_id', orgId)
+        .is('deleted_at', null)
         .or(`name.ilike.%${term}%,phone.ilike.%${term}%`));
       customerIds = matches.map((c) => c.id);
     }
@@ -361,7 +362,7 @@ const listDeliveries = asyncHandler(async (req, res) => {
 const customerDues = asyncHandler(async (req, res) => {
   const customer = unwrap(await supabase.from('customers')
     .select('id, organization_id, name, phone, address, status, opening_balance, credit_balance, assigned_vehicle:vehicles(id, vehicle_number, driver_name)')
-    .eq('id', req.params.id).maybeSingle());
+    .eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   const [openDeliveries, creditNotes] = await Promise.all([

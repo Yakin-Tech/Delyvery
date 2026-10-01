@@ -9,7 +9,7 @@ const unwrap = require('../utils/unwrap');
 const CREDIT_NOTE_SELECT = '*, issued_by_user:users!issued_by(id, name)';
 
 const listForCustomer = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.customerId).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.customerId).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   const notes = unwrap(await supabase
@@ -22,7 +22,7 @@ const listForCustomer = asyncHandler(async (req, res) => {
 });
 
 const create = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.body.customer_id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.body.customer_id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   if (req.body.delivery_id) {

@@ -84,6 +84,7 @@ export default function CustomerDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState(null);
+  const [loadError, setLoadError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -126,10 +127,16 @@ export default function CustomerDetailPage() {
     }
   }
 
+  // A customer that's been Trashed (see trash.controller.js) — or just
+  // doesn't exist — 404s here; without a catch, that would surface as an
+  // uncaught promise rejection instead of a normal "not found" page.
   async function load() {
     setLoading(true);
     try {
       setData(await getCustomer(id));
+      setLoadError('');
+    } catch (err) {
+      setLoadError(err.message);
     } finally {
       setLoading(false);
     }
@@ -292,7 +299,15 @@ export default function CustomerDetailPage() {
     return data.deliveries.filter((d) => d.payment_status !== 'paid' && new Date(d.delivery_date).getTime() < cutoff).length;
   }, [data]);
 
-  if (loading || !data) return <Spinner />;
+  if (loading) return <Spinner />;
+  if (loadError || !data) {
+    return (
+      <div className="page">
+        <Link to="/admin/customers" className="mutedText">{t('common.backTo', { page: t('customers.title') })}</Link>
+        <p className="errorText">{loadError || t('customers.detail.notFound')}</p>
+      </div>
+    );
+  }
 
   const { customer, payments, credit_notes: creditNotes, deposits, total_due } = data;
 

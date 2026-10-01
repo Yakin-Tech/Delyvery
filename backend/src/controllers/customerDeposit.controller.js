@@ -11,7 +11,7 @@ function deriveStatus(totalDeposit, returnedAmount) {
 }
 
 const listForCustomer = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.customerId).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.customerId).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   const deposits = unwrap(await supabase
@@ -24,7 +24,7 @@ const listForCustomer = asyncHandler(async (req, res) => {
 });
 
 const create = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.body.customer_id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.body.customer_id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   const { item_name, quantity_deposited, deposit_amount_per_item, deposit_date, notes } = req.body;
