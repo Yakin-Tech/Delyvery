@@ -201,7 +201,6 @@ export default function ProductsPage() {
       header: t('products.columns.overallPrice'),
       render: (r) => (r.default_quantity ? formatCurrency(r.default_price * r.default_quantity) : '—'),
     }] : []),
-    { key: 'reorder_level', header: t('products.modal.reorderLevel'), render: (r) => r.reorder_level ?? '—' },
     { key: 'status', header: t('common.status'), render: (r) => <Badge tone={r.is_active ? 'success' : 'neutral'}>{r.is_active ? t('common.active') : t('common.inactive')}</Badge> },
     {
       key: 'actions',
