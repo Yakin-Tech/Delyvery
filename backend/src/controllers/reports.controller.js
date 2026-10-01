@@ -249,7 +249,7 @@ async function computeCustomerInactivity(req) {
   const filters = reportFilters(req);
 
   const [customers, deliveries] = await Promise.all([
-    filterCustomersByAssignment(supabase.from('customers').select('id, name, phone, assigned_staff:users(name)').eq('organization_id', orgId).eq('status', 'active'), filters).then(unwrap),
+    filterCustomersByAssignment(supabase.from('customers').select('id, name, phone, assigned_staff:users!assigned_staff_id(name)').eq('organization_id', orgId).eq('status', 'active'), filters).then(unwrap),
     supabase.from('deliveries').select('customer_id, delivery_date').eq('organization_id', orgId).order('delivery_date', { ascending: false }).then(unwrap),
   ]);
 
@@ -465,7 +465,7 @@ async function computeZonePerformance(req) {
   const orgId = requireOrgId(req);
 
   const customers = unwrap(await supabase.from('customers')
-    .select('id, opening_balance, credit_balance, assigned_staff:users(assigned_zone)')
+    .select('id, opening_balance, credit_balance, assigned_staff:users!assigned_staff_id(assigned_zone)')
     .eq('organization_id', orgId).eq('status', 'active'));
   const customerIds = customers.map((c) => c.id);
   if (customerIds.length === 0) return [];

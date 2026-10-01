@@ -40,7 +40,7 @@ const getDashboard = asyncHandler(async (req, res) => {
   const notificationWindowStart = new Date(Date.now() - NOTIFICATION_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
   const [activeCustomers, todaySkips, pendingDuesResults, newDeviceLogins, inactiveCustomerDeliveries] = await Promise.all([
-    supabase.from('customers').select('id, name, assigned_staff:users(name)').eq('organization_id', orgId).eq('status', 'active').then(unwrap),
+    supabase.from('customers').select('id, name, assigned_staff:users!assigned_staff_id(name)').eq('organization_id', orgId).eq('status', 'active').then(unwrap),
     supabase.from('route_skips').select('customer_id').eq('organization_id', orgId).eq('skip_date', today).then(unwrap),
     // Reuses pendingDues.controller.js's aggregation so "who owes what, since
     // when" is computed identically here and on the Pending Dues page.

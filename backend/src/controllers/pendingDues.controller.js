@@ -19,7 +19,7 @@ function daysAgo(dateStr) {
 // deliveries, minus any credit notes issued to them and any credit balance
 // they're carrying — see computeTotalDue.
 async function computePendingDues({ organizationId, customerFilters = {}, search, minAgeDays, sort }) {
-  let customerQuery = supabase.from('customers').select('*, assigned_staff:users(id, name), assigned_vehicle:vehicles(id, vehicle_number, driver_name)').eq('organization_id', organizationId);
+  let customerQuery = supabase.from('customers').select('*, assigned_staff:users!assigned_staff_id(id, name), assigned_vehicle:vehicles(id, vehicle_number, driver_name)').eq('organization_id', organizationId);
   for (const [field, value] of Object.entries(customerFilters)) {
     customerQuery = customerQuery.eq(field, value);
   }
