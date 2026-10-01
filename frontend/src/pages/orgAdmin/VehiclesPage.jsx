@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { listVehicles, createVehicle, updateVehicle } from '../../api/vehicles.api';
+import { listVehicles, createVehicle, updateVehicle, deleteVehicle } from '../../api/vehicles.api';
 import Button from '../../components/common/Button';
 import IconButton from '../../components/common/IconButton';
 import TextInput from '../../components/common/TextInput';
 import Modal from '../../components/common/Modal';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Table from '../../components/common/Table';
 import Badge from '../../components/common/Badge';
 import Spinner from '../../components/common/Spinner';
@@ -23,6 +24,9 @@ export default function VehiclesPage() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   async function load(pageNum, size = pageSize) {
     setLoading(true);
@@ -92,6 +96,20 @@ export default function VehiclesPage() {
     await load(page);
   }
 
+  async function confirmDelete() {
+    setDeleteError('');
+    setDeleteBusy(true);
+    try {
+      await deleteVehicle(deleteTarget.id);
+      setDeleteTarget(null);
+      await load(page);
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
+
   const columns = [
     { key: 'vehicle_number', header: t('vehicles.columns.number'), render: (r) => <strong>{r.vehicle_number}</strong> },
     { key: 'label', header: t('vehicles.columns.label'), render: (r) => r.label || '—' },
@@ -107,6 +125,7 @@ export default function VehiclesPage() {
           <Button variant="ghost" onClick={() => toggleStatus(r)}>
             {r.status === 'active' ? t('vehicles.deactivate') : t('vehicles.activate')}
           </Button>
+          <IconButton icon="delete" label={t('common.delete')} onClick={() => { setDeleteTarget(r); setDeleteError(''); }} />
         </div>
       ),
     },
@@ -146,6 +165,17 @@ export default function VehiclesPage() {
             </div>
           </form>
         </Modal>
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          message={t('vehicles.deleteConfirm', { number: deleteTarget.vehicle_number })}
+          danger
+          busy={deleteBusy}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       )}
     </div>
   );

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { listStaff, createStaff, updateStaff, resetStaffPassword } from '../../api/staff.api';
+import { listStaff, createStaff, updateStaff, deleteStaff, resetStaffPassword } from '../../api/staff.api';
 import Button from '../../components/common/Button';
+import IconButton from '../../components/common/IconButton';
 import TextInput from '../../components/common/TextInput';
 import Modal from '../../components/common/Modal';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Table from '../../components/common/Table';
 import Badge from '../../components/common/Badge';
 import Spinner from '../../components/common/Spinner';
@@ -23,6 +25,9 @@ export default function StaffPage() {
   const [error, setError] = useState('');
   const [resetTarget, setResetTarget] = useState(null);
   const [resetPassword, setResetPasswordValue] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   async function load(pageNum, size = pageSize) {
     setLoading(true);
@@ -74,6 +79,20 @@ export default function StaffPage() {
     setResetPasswordValue('');
   }
 
+  async function confirmDelete() {
+    setDeleteError('');
+    setDeleteBusy(true);
+    try {
+      await deleteStaff(deleteTarget.id);
+      setDeleteTarget(null);
+      await load(page);
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
+
   const columns = [
     { key: 'name', header: t('staff.columns.name') },
     { key: 'phone', header: t('staff.columns.phone') },
@@ -88,6 +107,7 @@ export default function StaffPage() {
           <Button variant="ghost" onClick={() => toggleStatus(r)}>
             {r.status === 'active' ? t('staff.deactivate') : t('staff.activate')}
           </Button>
+          <IconButton icon="delete" label={t('common.delete')} onClick={() => { setDeleteTarget(r); setDeleteError(''); }} />
         </div>
       ),
     },
@@ -137,6 +157,17 @@ export default function StaffPage() {
             </div>
           </form>
         </Modal>
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          message={t('staff.deleteConfirm', { name: deleteTarget.name })}
+          danger
+          busy={deleteBusy}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       )}
     </div>
   );

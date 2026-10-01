@@ -1,7 +1,7 @@
-import { FiEdit2, FiTrash2, FiEye, FiX } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiEye, FiX, FiRotateCcw } from 'react-icons/fi';
 import styles from './IconButton.module.css';
 
-const ICONS = { edit: FiEdit2, delete: FiTrash2, view: FiEye, remove: FiX };
+const ICONS = { edit: FiEdit2, delete: FiTrash2, view: FiEye, remove: FiX, restore: FiRotateCcw };
 
 // A compact icon-only action for table rows (pen = edit, dustbin = delete...).
 // The icon carries no words, so `label` is required: it becomes the accessible

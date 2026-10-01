@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getCustomer, updateCustomer, topUpWallet, getPortalLink } from '../../api/customers.api';
+import { getCustomer, updateCustomer, deleteCustomer, topUpWallet, getPortalLink } from '../../api/customers.api';
 import { createDeposit, recordDepositReturn } from '../../api/customerDeposits.api';
 import { createCreditNote, voidCreditNote } from '../../api/creditNotes.api';
 import { useAuth } from '../../context/AuthContext';
@@ -77,12 +77,16 @@ function buildLedger(data) {
 export default function CustomerDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams();
+  const navigate = useNavigate();
   const { organization } = useAuth();
   const [data, setData] = useState(null);
   const vehicleOrg = organization?.delivery_model === 'vehicle_eod';
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   // Record Delivery (quick action)
   const [showDelivery, setShowDelivery] = useState(false);
@@ -109,6 +113,18 @@ export default function CustomerDetailPage() {
   const [walletTopupError, setWalletTopupError] = useState('');
   const [walletTopupSaving, setWalletTopupSaving] = useState(false);
   const [portalLinkBusy, setPortalLinkBusy] = useState(false);
+
+  async function confirmDelete() {
+    setDeleteError('');
+    setDeleteBusy(true);
+    try {
+      await deleteCustomer(id);
+      navigate('/admin/customers');
+    } catch (err) {
+      setDeleteError(err.message);
+      setDeleteBusy(false);
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -395,6 +411,7 @@ export default function CustomerDetailPage() {
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <IconButton icon="edit" label={t('customers.detail.editCustomer')} onClick={startEdit} />
+        <IconButton icon="delete" label={t('customers.detail.deleteCustomer')} onClick={() => { setDeleteError(''); setShowDeleteConfirm(true); }} />
         <Button variant="ghost" onClick={openDeposit}>{t('deposits.addDeposit')}</Button>
         <Button variant="ghost" onClick={openCreditNote}>{t('creditNotes.addCreditNote')}</Button>
         <Button variant="ghost" onClick={openWalletTopup}>{t('customers.detail.topUpWallet')}</Button>
@@ -588,6 +605,17 @@ export default function CustomerDetailPage() {
           danger
           onConfirm={confirmVoidCreditNote}
           onCancel={() => setVoidTargetId(null)}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          message={t('customers.detail.deleteConfirm', { name: customer.name })}
+          danger
+          busy={deleteBusy}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
         />
       )}
     </div>

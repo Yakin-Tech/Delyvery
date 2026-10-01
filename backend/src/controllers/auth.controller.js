@@ -28,7 +28,7 @@ function serializeUser(user) {
 const login = asyncHandler(async (req, res) => {
   const { phone, password } = req.body;
 
-  const user = unwrap(await supabase.from('users').select('*').eq('phone', phone).maybeSingle());
+  const user = unwrap(await supabase.from('users').select('*').eq('phone', phone).is('deleted_at', null).maybeSingle());
   if (!user || user.status !== 'active') {
     throw ApiError.unauthorized('Invalid phone or password');
   }

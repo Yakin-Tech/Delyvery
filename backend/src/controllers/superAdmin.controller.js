@@ -93,7 +93,7 @@ const DEFAULT_UNIT_BY_BUSINESS_TYPE = { water: 'litre', milk: 'litre', gas: 'cyl
 const createOrganization = asyncHandler(async (req, res) => {
   const { name, business_type, address, phone_numbers, admin_name, admin_phone, admin_password, delivery_model } = req.body;
 
-  const existingAdmin = unwrap(await supabase.from('users').select('id').eq('phone', admin_phone).maybeSingle());
+  const existingAdmin = unwrap(await supabase.from('users').select('id').eq('phone', admin_phone).is('deleted_at', null).maybeSingle());
   if (existingAdmin) throw ApiError.conflict('A user with this phone number already exists');
 
   const admin_password_hash = await hashPassword(admin_password);
@@ -187,7 +187,7 @@ const createOrgAdmin = asyncHandler(async (req, res) => {
 
   const { name, phone, password } = req.body;
 
-  const existing = unwrap(await supabase.from('users').select('id').eq('phone', phone).maybeSingle());
+  const existing = unwrap(await supabase.from('users').select('id').eq('phone', phone).is('deleted_at', null).maybeSingle());
   if (existing) throw ApiError.conflict('A user with this phone number already exists');
 
   const password_hash = await hashPassword(password);

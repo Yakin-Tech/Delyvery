@@ -17,6 +17,7 @@ import ProductsPage from '../pages/orgAdmin/ProductsPage';
 import StockPage from '../pages/orgAdmin/StockPage';
 import RouteReorderPage from '../pages/orgAdmin/RouteReorderPage';
 import ReportsPage from '../pages/orgAdmin/ReportsPage';
+import TrashPage from '../pages/orgAdmin/TrashPage';
 import PortalPage from '../pages/portal/PortalPage';
 import DailyRunSheetPage from '../pages/staff/DailyRunSheetPage';
 import VehicleEodEntryPage from '../pages/staff/VehicleEodEntryPage';
@@ -107,6 +108,7 @@ export default function AppRoutes() {
             </Route>
           </Route>
           <Route path="/admin/reports" element={<ReportsPage />} />
+          <Route path="/admin/trash" element={<TrashPage />} />
           <Route path="/admin/settings" element={<SettingsPage />} />
         </Route>
       </Route>

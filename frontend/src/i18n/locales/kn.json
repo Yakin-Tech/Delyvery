@@ -59,7 +59,8 @@
     "onboardingFunnel": "ಆನ್‌ಬೋರ್ಡಿಂಗ್ ಫನಲ್",
     "auditLog": "ಆಡಿಟ್ ಲಾಗ್",
     "vehicles": "ವಾಹನಗಳು",
-    "vehicleEod": "ವಾಹನ ದಿನಾಂತ್ಯ ದಾಖಲಾತಿ"
+    "vehicleEod": "ವಾಹನ ದಿನಾಂತ್ಯ ದಾಖಲಾತಿ",
+    "trash": "ಟ್ರ್ಯಾಷ್"
   },
   "roles": {
     "super_admin": "ಸೂಪರ್ ಅಡ್ಮಿನ್",
@@ -164,6 +165,8 @@
     },
     "detail": {
       "editCustomer": "ಗ್ರಾಹಕರನ್ನು ಸಂಪಾದಿಸಿ",
+      "deleteCustomer": "ಗ್ರಾಹಕರನ್ನು ಅಳಿಸಿ",
+      "deleteConfirm": "{{name}} ಅನ್ನು ಟ್ರ್ಯಾಷ್‌ಗೆ ಸರಿಸಬೇಕೇ? ನೀವು ಅವರನ್ನು ನಂತರ ಮರುಸ್ಥಾಪಿಸಬಹುದು.",
       "recordDelivery": "ವಿತರಣೆಯನ್ನು ದಾಖಲಿಸಿ",
       "recordPayment": "ಪಾವತಿಯನ್ನು ದಾಖಲಿಸಿ",
       "whatsapp": "WhatsApp",
@@ -218,6 +221,7 @@
     "resetPassword": "ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸಿ",
     "deactivate": "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ",
     "activate": "ಸಕ್ರಿಯಗೊಳಿಸಿ",
+    "deleteConfirm": "{{name}} ಅನ್ನು ಟ್ರ್ಯಾಷ್‌ಗೆ ಸರಿಸಬೇಕೇ? ನೀವು ಅವರನ್ನು ನಂತರ ಮರುಸ್ಥಾಪಿಸಬಹುದು.",
     "columns": {
       "name": "ಹೆಸರು",
       "phone": "ಫೋನ್",
@@ -868,6 +872,7 @@
     "title": "ಉತ್ಪನ್ನಗಳು",
     "addProduct": "ಉತ್ಪನ್ನವನ್ನು ಸೇರಿಸಿ",
     "empty": "ಇನ್ನೂ ಉತ್ಪನ್ನಗಳಿಲ್ಲ.",
+    "deleteConfirm": "{{name}} ಅನ್ನು ಟ್ರ್ಯಾಷ್‌ಗೆ ಸರಿಸಬೇಕೇ? ನೀವು ಇದನ್ನು ನಂತರ ಮರುಸ್ಥಾಪಿಸಬಹುದು.",
     "columns": {
       "name": "ಹೆಸರು",
       "unit": "ಯುನಿಟ್",
@@ -895,6 +900,34 @@
     "retroWarning": "ಇದು ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ದಿನಾಂಕ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಈಗಾಗಲೇ ದಾಖಲಾದ ವಿತರಣೆಗಳ ಬೆಲೆಯನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ ಮತ್ತು ಅವುಗಳ ಒಟ್ಟು ಮೊತ್ತ ಹಾಗೂ ಪಾವತಿ ಸ್ಥಿತಿಯನ್ನು ಮರುಲೆಕ್ಕಾಚಾರ ಮಾಡುತ್ತದೆ. ಇದನ್ನು ಹಿಂಪಡೆಯಲಾಗುವುದಿಲ್ಲ — ನಿಜವಾದ ಬೆಲೆ ತಿದ್ದುಪಡಿಗೆ ಮಾತ್ರ ಬಳಸಿ.",
     "retroSuccess": "{{count}} ವಿತರಣೆಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ.",
     "confirmRetroactive": "ಹಿಂದಿನ ವಿತರಣೆಗಳಿಗೆ ಅನ್ವಯಿಸಿ"
+  },
+  "trash": {
+    "title": "ಟ್ರ್ಯಾಷ್",
+    "empty": "ಟ್ರ್ಯಾಷ್ ಖಾಲಿಯಾಗಿದೆ.",
+    "hint": "ಅಳಿಸಲಾದ ವಾಹನಗಳು, ಸಿಬ್ಬಂದಿ, ಗ್ರಾಹಕರು ಮತ್ತು ಉತ್ಪನ್ನಗಳು ನೀವು ಅವುಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸುವ ಅಥವಾ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುವವರೆಗೆ ಇಲ್ಲಿ ಉಳಿಯುತ್ತವೆ.",
+    "columns": {
+      "type": "ಪ್ರಕಾರ",
+      "name": "ಹೆಸರು",
+      "deletedAt": "ಅಳಿಸಲಾಗಿದೆ",
+      "deletedBy": "ಅಳಿಸಿದವರು"
+    },
+    "types": {
+      "vehicle": "ವಾಹನ",
+      "staff": "ಸಿಬ್ಬಂದಿ",
+      "customer": "ಗ್ರಾಹಕ",
+      "product": "ಉತ್ಪನ್ನ"
+    },
+    "filterAll": "ಎಲ್ಲಾ ಪ್ರಕಾರಗಳು",
+    "restore": "ಮರುಸ್ಥಾಪಿಸಿ",
+    "deletePermanently": "ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ",
+    "deletePermanentlyConfirm": "{{name}} ಅನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಬೇಕೇ? ಇದನ್ನು ಹಿಂಪಡೆಯಲಾಗುವುದಿಲ್ಲ.",
+    "deletePermanentlyHint": "ಇದಕ್ಕೆ ಇನ್ನೂ ವಿತರಣೆ ಅಥವಾ ಪಾವತಿ ಇತಿಹಾಸವಿದ್ದರೆ, ಸಂಪೂರ್ಣವಾಗಿ ವಿಫಲಗೊಳ್ಳುವ ಬದಲು ಇದನ್ನು ಹೇಗೆ ಪರಿಹರಿಸಬೇಕು ಎಂದು ನಿಮ್ಮನ್ನು ಕೇಳಲಾಗುತ್ತದೆ.",
+    "resolveTitle": "{{name}} ಅನ್ನು ಪೂರ್ಣವಾಗಿ ಅಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ",
+    "resolveMessage": "{{name}} ಗೆ ಇನ್ನೂ ವಿತರಣೆ ಅಥವಾ ಪಾವತಿ ಇತಿಹಾಸವಿದೆ, ಆದ್ದರಿಂದ ಇದನ್ನು ಹಾಗೆಯೇ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುವುದಿಲ್ಲ. ಹೇಗೆ ಮುಂದುವರಿಯಬೇಕು ಎಂದು ಆಯ್ಕೆಮಾಡಿ:",
+    "resolveAnonymize": "ಇತಿಹಾಸ ಉಳಿಸಿ, ವಿವರಗಳನ್ನು ತೆಗೆದುಹಾಕಿ",
+    "resolveAnonymizeHint": "ಹಿಂದಿನ ವಿತರಣೆಗಳು ಮತ್ತು ಪಾವತಿಗಳು ಹಾಗೆಯೇ ಉಳಿಯುತ್ತವೆ, ಆದರೆ {{name}} ಅವರ ಹೆಸರು ಮತ್ತು ಸಂಪರ್ಕ ವಿವರಗಳನ್ನು ಎಲ್ಲೆಡೆ \"ಅಳಿಸಲಾದ {{type}}\" ಎಂದು ಬದಲಾಯಿಸಲಾಗುತ್ತದೆ.",
+    "resolveForceDelete": "ಎಲ್ಲವನ್ನೂ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಿ",
+    "resolveForceDeleteHint": "{{name}} ಮತ್ತು ಅವರ ಎಲ್ಲಾ ವಿತರಣೆ, ಪಾವತಿ ಮತ್ತು ಸಂಬಂಧಿತ ಇತಿಹಾಸವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ಇದನ್ನು ಹಿಂಪಡೆಯಲಾಗುವುದಿಲ್ಲ."
   },
   "deposits": {
     "title": "ಭದ್ರತಾ ಠೇವಣಿಗಳು",
@@ -966,6 +999,7 @@
     "empty": "ಇನ್ನೂ ಯಾವುದೇ ವಾಹನಗಳನ್ನು ಸೇರಿಸಿಲ್ಲ.",
     "activate": "ಸಕ್ರಿಯಗೊಳಿಸಿ",
     "deactivate": "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ",
+    "deleteConfirm": "ವಾಹನ {{number}} ಅನ್ನು ಟ್ರ್ಯಾಷ್‌ಗೆ ಸರಿಸಬೇಕೇ? ನೀವು ಇದನ್ನು ನಂತರ ಮರುಸ್ಥಾಪಿಸಬಹುದು.",
     "columns": {
       "number": "ವಾಹನ ಸಂಖ್ಯೆ",
       "label": "ಲೇಬಲ್",
@@ -1272,8 +1306,15 @@
     "that_delivery_does_not_belong_to_this_customer": "ಆ ವಿತರಣೆ ಈ ಗ್ರಾಹಕರದ್ದಲ್ಲ",
     "this_credit_note_is_already_voided": "ಈ ಕ್ರೆಡಿಟ್ ನೋಟ್ ಈಗಾಗಲೇ ರದ್ದಾಗಿದೆ",
     "this_customer_is_not_assigned_to_you": "ಈ ಗ್ರಾಹಕರನ್ನು ನಿಮಗೆ ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ",
+    "this_customer_still_has_delivery_or_payment_history_and_cannot_be_permanently_deleted": "ಈ ಗ್ರಾಹಕರಿಗೆ ಇನ್ನೂ ವಿತರಣೆ ಅಥವಾ ಪಾವತಿ ಇತಿಹಾಸವಿದೆ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.",
+    "this_item_is_not_in_trash": "ಈ ಐಟಂ ಟ್ರ್ಯಾಷ್‌ನಲ್ಲಿ ಇಲ್ಲ",
     "this_is_not_available_for_your_organization": "ಇದು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಲಭ್ಯವಿಲ್ಲ",
     "this_link_is_no_longer_valid": "ಈ ಲಿಂಕ್ ಇನ್ನು ಮಾನ್ಯವಾಗಿಲ್ಲ.",
+    "this_product_still_has_delivery_or_stock_history_and_cannot_be_permanently_deleted": "ಈ ಉತ್ಪನ್ನಕ್ಕೆ ಇನ್ನೂ ವಿತರಣೆ ಅಥವಾ ಸ್ಟಾಕ್ ಇತಿಹಾಸವಿದೆ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.",
+    "this_staff_member_has_customers_assigned_to_them_reassign_them_before_removing_them": "ಈ ಸಿಬ್ಬಂದಿಗೆ ಗ್ರಾಹಕರು ನಿಯೋಜಿಸಲಾಗಿದೆ. ತೆಗೆದುಹಾಕುವ ಮೊದಲು ಅವರನ್ನು ಮರುನಿಯೋಜಿಸಿ.",
+    "this_staff_member_still_has_delivery_or_payment_history_and_cannot_be_permanently_deleted": "ಈ ಸಿಬ್ಬಂದಿಗೆ ಇನ್ನೂ ವಿತರಣೆ ಅಥವಾ ಪಾವತಿ ಇತಿಹಾಸವಿದೆ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.",
+    "this_vehicle_has_customers_assigned_to_it_reassign_them_before_removing_it": "ಈ ವಾಹನಕ್ಕೆ ಗ್ರಾಹಕರು ನಿಯೋಜಿಸಲಾಗಿದೆ. ತೆಗೆದುಹಾಕುವ ಮೊದಲು ಅವರನ್ನು ಮರುನಿಯೋಜಿಸಿ.",
+    "this_vehicle_still_has_delivery_or_payment_history_and_cannot_be_permanently_deleted": "ಈ ವಾಹನಕ್ಕೆ ಇನ್ನೂ ವಿತರಣೆ ಅಥವಾ ಪಾವತಿ ಇತಿಹಾಸವಿದೆ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.",
     "total_amount_must_be_a_non_negative_number": "ಒಟ್ಟು ಮೊತ್ತ ಋಣಾತ್ಮಕವಾಗಿರಬಾರದು",
     "unit_price_must_be_a_non_negative_number": "ಪ್ರತಿ ಯುನಿಟ್ ಬೆಲೆ ಋಣಾತ್ಮಕವಾಗಿರಬಾರದು",
     "user_not_found": "ಬಳಕೆದಾರರು ಕಂಡುಬಂದಿಲ್ಲ",

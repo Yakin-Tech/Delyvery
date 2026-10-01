@@ -14,5 +14,6 @@ router.use(authenticate);
 router.get('/', requireRole('org_admin', 'staff'), vehicleController.list);
 router.post('/', requireRole('org_admin'), vehicleValidator.createVehicle, validate, vehicleController.create);
 router.patch('/:id', requireRole('org_admin'), vehicleValidator.updateVehicle, validate, vehicleController.update);
+router.delete('/:id', requireRole('org_admin'), vehicleController.remove);
 
 module.exports = router;

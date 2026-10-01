@@ -41,7 +41,7 @@ function resolveAmounts({ quantity, unit_price, total_amount, payment_status, am
 
 async function assertProductVisible(req, productId) {
   if (!productId) return null;
-  const product = unwrap(await supabase.from('products').select('id, organization_id, default_price').eq('id', productId).maybeSingle());
+  const product = unwrap(await supabase.from('products').select('id, organization_id, default_price').eq('id', productId).is('deleted_at', null).maybeSingle());
   if (!product || product.organization_id !== req.user.organizationId) {
     throw ApiError.badRequest('Product not found in your organization');
   }
@@ -50,7 +50,7 @@ async function assertProductVisible(req, productId) {
 
 async function assertVehicleVisible(req, vehicleId) {
   if (!vehicleId) return null;
-  const vehicle = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', vehicleId).maybeSingle());
+  const vehicle = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', vehicleId).is('deleted_at', null).maybeSingle());
   if (!vehicle || vehicle.organization_id !== req.user.organizationId) {
     throw ApiError.badRequest('Vehicle not found in your organization');
   }
@@ -62,7 +62,7 @@ async function assertVehicleVisible(req, vehicleId) {
 // of customers — so the per-staff visibility/"can add customers" switches
 // (which exist for the route_staff model) don't apply there.
 async function assertCustomerVisible(req, customerId) {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id, assigned_staff_id').eq('id', customerId).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id, assigned_staff_id').eq('id', customerId).is('deleted_at', null).maybeSingle());
   if (!customer || customer.organization_id !== req.user.organizationId) {
     throw ApiError.badRequest('Customer not found in your organization');
   }
@@ -102,10 +102,14 @@ async function resolveCustomerId(req, { customer_id, new_customer, vehicle_id })
     // phone-uniqueness fix (see schema.sql) may still have leftover
     // duplicates for this phone until they re-run it — falling back to the
     // oldest match keeps this working instead of throwing on >1 row.
+    // Excludes Trashed customers (see trash.controller.js) — a phone reused
+    // after its previous owner was trashed must create a genuinely new
+    // customer, not silently attach this delivery to the hidden old row.
     const [existing] = unwrap(await supabase.from('customers')
       .select('id')
       .eq('organization_id', req.user.organizationId)
       .eq('phone', new_customer.phone)
+      .is('deleted_at', null)
       .order('created_at', { ascending: true })
       .limit(1));
     if (existing) return existing.id;
@@ -352,9 +356,17 @@ async function resolveVehicleId(req, vehicleId, customerId) {
   }
   if (!isVehicleOrg(req)) return null;
 
+  // A customer can still be pointing at a Trashed vehicle (moving a vehicle
+  // to Trash never force-unassigns its customers — see vehicle.controller.js
+  // remove) — falling back to it here would silently attach a new delivery
+  // to a vehicle the org admin can no longer see or manage, so this only
+  // ever falls back to one that's still active.
   if (customerId) {
     const customer = unwrap(await supabase.from('customers').select('assigned_vehicle_id').eq('id', customerId).maybeSingle());
-    if (customer && customer.assigned_vehicle_id) return customer.assigned_vehicle_id;
+    if (customer && customer.assigned_vehicle_id) {
+      const vehicle = unwrap(await supabase.from('vehicles').select('id').eq('id', customer.assigned_vehicle_id).is('deleted_at', null).maybeSingle());
+      if (vehicle) return vehicle.id;
+    }
   }
   throw ApiError.badRequest('Choose the vehicle that made this delivery');
 }

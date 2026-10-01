@@ -67,7 +67,10 @@ async function attachTotalDue(customers) {
   }));
 }
 
-const CUSTOMER_SELECT = '*, assigned_staff:users(id, name), assigned_vehicle:vehicles(id, vehicle_number, driver_name)';
+// !assigned_staff_id disambiguates: customers now has two FKs to users
+// (assigned_staff_id and deleted_by, for Trash — see trash.controller.js),
+// so PostgREST can no longer infer which one this embed means.
+const CUSTOMER_SELECT = '*, assigned_staff:users!assigned_staff_id(id, name), assigned_vehicle:vehicles(id, vehicle_number, driver_name)';
 
 const isVehicleOrg = (req) => req.organization.delivery_model === 'vehicle_eod';
 
@@ -87,7 +90,7 @@ function applyVisibility(query, req) {
 }
 
 async function assertVehicleInOrg(req, vehicleId) {
-  const vehicle = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', vehicleId).maybeSingle());
+  const vehicle = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', vehicleId).is('deleted_at', null).maybeSingle());
   if (!vehicle || vehicle.organization_id !== req.user.organizationId) {
     throw ApiError.badRequest('Invalid assigned_vehicle_id');
   }
@@ -97,7 +100,7 @@ const list = asyncHandler(async (req, res) => {
   const { search, assigned_staff_id, assigned_vehicle_id, status, due_status, with_due } = req.query;
   const pg = parsePagination(req.query);
 
-  let query = supabase.from('customers').select(CUSTOMER_SELECT, { count: 'exact' }).eq('organization_id', requireOrgId(req));
+  let query = supabase.from('customers').select(CUSTOMER_SELECT, { count: 'exact' }).eq('organization_id', requireOrgId(req)).is('deleted_at', null);
   query = applyVisibility(query, req);
 
   if (status) query = query.eq('status', status);
@@ -136,7 +139,7 @@ const list = asyncHandler(async (req, res) => {
 });
 
 const getDetail = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select(CUSTOMER_SELECT).eq('id', req.params.id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select(CUSTOMER_SELECT).eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   if (staffLimitedToOwnCustomers(req)) {
@@ -191,7 +194,7 @@ const getDetail = asyncHandler(async (req, res) => {
 const ORDER_SELECT = '*, staff:users(id, name), product:products(id, name, unit_of_measure), vehicle:vehicles(id, vehicle_number)';
 
 const listOrders = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id, assigned_staff_id').eq('id', req.params.id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id, assigned_staff_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
   if (staffLimitedToOwnCustomers(req) && customer.assigned_staff_id !== req.user.id) {
     throw ApiError.notFound('Resource not found');
@@ -238,11 +241,13 @@ const create = asyncHandler(async (req, res) => {
 
   if (phone) {
     // .limit(1) instead of .maybeSingle() — see the matching comment in
-    // delivery.controller.js's resolveCustomerId for why.
+    // delivery.controller.js's resolveCustomerId for why. Only among
+    // non-deleted customers — a trashed customer's phone is free to reuse.
     const [existing] = unwrap(await supabase.from('customers')
       .select('id, name')
       .eq('organization_id', req.user.organizationId)
       .eq('phone', phone)
+      .is('deleted_at', null)
       .limit(1));
     if (existing) throw ApiError.conflict(`This phone number is already registered to customer "${existing.name}"`);
   }
@@ -267,7 +272,7 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  const existing = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.id).maybeSingle());
+  const existing = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, existing);
 
   const fields = [
@@ -286,6 +291,7 @@ const update = asyncHandler(async (req, res) => {
       .select('id, name')
       .eq('organization_id', req.user.organizationId)
       .eq('phone', patch.phone)
+      .is('deleted_at', null)
       .neq('id', req.params.id)
       .limit(1));
     if (conflict) throw ApiError.conflict(`This phone number is already registered to customer "${conflict.name}"`);
@@ -293,6 +299,21 @@ const update = asyncHandler(async (req, res) => {
 
   const customer = unwrap(await supabase.from('customers').update(patch).eq('id', req.params.id).select(CUSTOMER_SELECT).single());
   res.json(customer);
+});
+
+// Moves a customer to Trash (see trash.controller.js) instead of deleting
+// them outright — status 'inactive' is still how a customer is normally
+// taken off active duty day-to-day; this is for removing one from the list
+// entirely, reversibly. Soft-deleting (rather than the real delete Trash's
+// permanent-delete does) also sidesteps schema.sql's on-delete-cascade on
+// deliveries/payments/credit_notes/customer_deposits for this customer,
+// which would otherwise silently wipe real ledger data.
+const remove = asyncHandler(async (req, res) => {
+  const existing = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
+  assertSameOrg(req, existing);
+
+  unwrap(await supabase.from('customers').update({ deleted_at: new Date().toISOString(), deleted_by: req.user.id }).eq('id', existing.id));
+  res.json({ success: true });
 });
 
 // Bulk-saves a new visiting order after a drag-to-reorder in Org Admin's
@@ -338,7 +359,7 @@ const bulkAssign = asyncHandler(async (req, res) => {
   await assertAllInOrg(req, customer_ids);
 
   if (assigned_staff_id) {
-    const staff = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', assigned_staff_id).maybeSingle());
+    const staff = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', assigned_staff_id).is('deleted_at', null).maybeSingle());
     if (!staff || staff.organization_id !== req.user.organizationId || staff.role !== 'staff') {
       throw ApiError.badRequest('Invalid assigned_staff_id');
     }
@@ -381,7 +402,7 @@ const bulkStatus = asyncHandler(async (req, res) => {
 // of those with a flag: it deliberately skips due-settlement so the whole
 // amount becomes usable credit instead of first paying off older dues.
 const walletTopup = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   const { amount, payment_mode, payment_date, notes } = req.body;
@@ -406,7 +427,7 @@ const walletTopup = asyncHandler(async (req, res) => {
 // Idempotent: a customer who already has one just gets it back unchanged, so
 // a previously shared link keeps working.
 const getPortalLink = asyncHandler(async (req, res) => {
-  const customer = unwrap(await supabase.from('customers').select('id, organization_id, portal_token').eq('id', req.params.id).maybeSingle());
+  const customer = unwrap(await supabase.from('customers').select('id, organization_id, portal_token').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, customer);
 
   let token = customer.portal_token;
@@ -418,4 +439,4 @@ const getPortalLink = asyncHandler(async (req, res) => {
   res.json({ portal_token: token });
 });
 
-module.exports = { list, getDetail, listOrders, create, update, reorder, bulkAssign, bulkAssignVehicle, bulkStatus, walletTopup, getPortalLink };
+module.exports = { list, getDetail, listOrders, create, update, remove, reorder, bulkAssign, bulkAssignVehicle, bulkStatus, walletTopup, getPortalLink };

@@ -23,7 +23,8 @@ const list = asyncHandler(async (req, res) => {
   let query = supabase
     .from('vehicles')
     .select(VEHICLE_FIELDS, { count: 'exact' })
-    .eq('organization_id', requireOrgId(req));
+    .eq('organization_id', requireOrgId(req))
+    .is('deleted_at', null);
 
   if (status) query = query.eq('status', status);
   if (search) {
@@ -38,8 +39,10 @@ const list = asyncHandler(async (req, res) => {
   res.json(pg.buildResult(data, count));
 });
 
+// Only checks among non-deleted vehicles — a trashed vehicle's number is
+// free to reuse (see the partial unique index in schema.sql).
 async function assertVehicleNumberFree(orgId, vehicleNumber, exceptId) {
-  let query = supabase.from('vehicles').select('id').eq('organization_id', orgId).eq('vehicle_number', vehicleNumber);
+  let query = supabase.from('vehicles').select('id').eq('organization_id', orgId).eq('vehicle_number', vehicleNumber).is('deleted_at', null);
   if (exceptId) query = query.neq('id', exceptId);
   const existing = unwrap(await query.maybeSingle());
   if (existing) throw ApiError.conflict('A vehicle with this number already exists');
@@ -66,7 +69,7 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  const existing = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', req.params.id).maybeSingle());
+  const existing = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, existing);
 
   const { vehicle_number, label, driver_name, driver_phone, notes, status } = req.body;
@@ -87,4 +90,22 @@ const update = asyncHandler(async (req, res) => {
   res.json(vehicle);
 });
 
-module.exports = { list, create, update };
+// Moves a vehicle to Trash (see trash.controller.js) instead of deleting it
+// outright — status 'inactive' is still how a vehicle still in use elsewhere
+// gets retired day-to-day; this is for removing one from the list entirely,
+// reversibly, and always succeeds — any customers still assigned to it, or
+// delivery/payment history, get resolved from the Trash page instead (its
+// guarded permanent-delete, with "delete everything" / "keep history, remove
+// details" follow-ups). A customer still pointing at a Trashed vehicle can't
+// be silently misused in the meantime — resolveVehicleId in
+// delivery.controller.js never auto-attaches a deleted vehicle to a new
+// delivery.
+const remove = asyncHandler(async (req, res) => {
+  const existing = unwrap(await supabase.from('vehicles').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
+  assertSameOrg(req, existing);
+
+  unwrap(await supabase.from('vehicles').update({ deleted_at: new Date().toISOString(), deleted_by: req.user.id }).eq('id', existing.id));
+  res.json({ success: true });
+});
+
+module.exports = { list, create, update, remove };

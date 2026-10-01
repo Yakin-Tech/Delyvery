@@ -8,7 +8,7 @@ import Button from './Button';
 // focusConfirm puts keyboard focus on the confirm button, so Enter confirms and
 // Esc-free keyboard flows (Ctrl+S then Enter) work. Off by default: for a
 // destructive confirmation an errant Enter should never be the confirm.
-export default function ConfirmDialog({ title, message, confirmLabel, cancelLabel, danger = false, busy = false, focusConfirm = false, onConfirm, onCancel }) {
+export default function ConfirmDialog({ title, message, confirmLabel, cancelLabel, danger = false, busy = false, focusConfirm = false, hint, error, onConfirm, onCancel }) {
   const { t } = useTranslation();
   return (
     <Modal
@@ -24,6 +24,8 @@ export default function ConfirmDialog({ title, message, confirmLabel, cancelLabe
       )}
     >
       <p>{message}</p>
+      {hint && <p className="mutedText">{hint}</p>}
+      {error && <p className="errorText">{error}</p>}
     </Modal>
   );
 }

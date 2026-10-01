@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { listProducts, createProduct, updateProduct, getPriceHistory, applyPriceRetroactively } from '../../api/products.api';
+import { listProducts, createProduct, updateProduct, deleteProduct, getPriceHistory, applyPriceRetroactively } from '../../api/products.api';
 import Button from '../../components/common/Button';
 import IconButton from '../../components/common/IconButton';
 import TextInput from '../../components/common/TextInput';
 import Select from '../../components/common/Select';
 import Modal from '../../components/common/Modal';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Table from '../../components/common/Table';
 import Badge from '../../components/common/Badge';
 import Spinner from '../../components/common/Spinner';
@@ -39,6 +40,9 @@ export default function ProductsPage() {
   const [retroError, setRetroError] = useState('');
   const [retroSaving, setRetroSaving] = useState(false);
   const [retroResult, setRetroResult] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   async function load(pageNum = 1, size = pageSize) {
     setLoading(true);
@@ -144,6 +148,20 @@ export default function ProductsPage() {
     }
   }
 
+  async function confirmDelete() {
+    setDeleteError('');
+    setDeleteBusy(true);
+    try {
+      await deleteProduct(deleteTarget.id);
+      setDeleteTarget(null);
+      await load(pagination?.page || 1);
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
+
   async function openHistory(product) {
     setHistoryTarget(product);
     setHistory(await getPriceHistory(product.id));
@@ -193,6 +211,7 @@ export default function ProductsPage() {
           <IconButton icon="edit" label={t('common.edit')} onClick={() => openEdit(r)} />
           <Button variant="ghost" onClick={() => openHistory(r)}>{t('products.priceHistory')}</Button>
           <Button variant="ghost" onClick={() => openRetro(r)}>{t('products.applyRetroactively')}</Button>
+          <IconButton icon="delete" label={t('common.delete')} onClick={() => { setDeleteTarget(r); setDeleteError(''); }} />
         </div>
       ),
     },
@@ -324,6 +343,17 @@ export default function ProductsPage() {
             </form>
           )}
         </Modal>
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          message={t('products.deleteConfirm', { name: deleteTarget.name })}
+          danger
+          busy={deleteBusy}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       )}
     </div>
   );

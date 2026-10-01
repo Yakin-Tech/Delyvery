@@ -16,6 +16,7 @@ const stockRoutes = require('./stock.routes');
 const dashboardRoutes = require('./dashboard.routes');
 const reportsRoutes = require('./reports.routes');
 const portalRoutes = require('./portal.routes');
+const trashRoutes = require('./trash.routes');
 
 const router = Router();
 
@@ -53,6 +54,7 @@ router.use('/credit-notes', creditNoteRoutes);
 router.use('/stock', stockRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/reports', reportsRoutes);
+router.use('/trash', trashRoutes);
 // Public, unauthenticated — see portal.routes.js.
 router.use('/portal', portalRoutes);
 

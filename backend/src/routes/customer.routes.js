@@ -18,6 +18,7 @@ router.get('/:id', customerController.getDetail);
 router.get('/:id/orders', customerController.listOrders);
 router.post('/', customerValidator.createCustomer, validate, customerController.create);
 router.patch('/:id', requireRole('org_admin'), customerValidator.updateCustomer, validate, customerController.update);
+router.delete('/:id', requireRole('org_admin'), customerController.remove);
 router.post('/:id/wallet-topup', requireRole('org_admin'), customerValidator.walletTopup, validate, customerController.walletTopup);
 router.post('/:id/portal-link', requireRole('org_admin'), customerController.getPortalLink);
 

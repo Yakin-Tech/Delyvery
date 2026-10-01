@@ -29,6 +29,7 @@ const NAV_ITEMS = {
     { to: '/admin/routes', key: 'nav.routes', moduleFlag: 'routes_enabled', visible: (org) => !isVehicleModel(org) },
     { to: '/admin/stock', key: 'nav.stock', moduleFlag: 'stock_enabled' },
     { to: '/admin/reports', key: 'nav.reports' },
+    { to: '/admin/trash', key: 'nav.trash' },
     { to: '/admin/settings', key: 'nav.settings' },
   ],
   staff: [

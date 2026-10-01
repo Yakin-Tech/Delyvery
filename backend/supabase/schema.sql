@@ -136,7 +136,28 @@ create table if not exists users (
 -- existed needs explicit ALTERs, same reasoning as delivery_modes above.
 alter table users add column if not exists theme_mode text not null default 'light';
 
+-- Soft delete (Trash — see trash.controller.js): a staff member an org admin
+-- deletes moves here instead of being gone immediately, so it can be
+-- restored or, once nothing references it, permanently deleted. deleted_at
+-- null means active, same convention as vehicles/customers/products below.
+alter table users add column if not exists deleted_at timestamptz;
+alter table users add column if not exists deleted_by uuid references users(id) on delete set null;
+-- Set once a Trashed staff member has been resolved for good (see
+-- trash.controller.js's anonymize) — name/phone overwritten with a
+-- placeholder so old deliveries/payments still show *something* instead of a
+-- broken reference, without keeping this person's real contact details
+-- around forever. A null anonymized_at (with deleted_at set) means still
+-- sitting in Trash, awaiting either restore or a final decision.
+alter table users add column if not exists anonymized_at timestamptz;
+-- phone is a login, so it must stay globally unique — but only among active
+-- users, or a deleted staff member's phone could never be reused for a new
+-- one. Replaces the old plain "unique" on the column above.
+alter table users drop constraint if exists users_phone_key;
+drop index if exists idx_users_phone_unique;
+create unique index if not exists idx_users_phone_unique on users(phone) where deleted_at is null;
+
 create index if not exists idx_users_organization_id on users(organization_id);
+create index if not exists idx_users_deleted_at on users(deleted_at) where deleted_at is not null;
 
 drop trigger if exists trg_users_updated_at on users;
 create trigger trg_users_updated_at before update on users
@@ -147,8 +168,8 @@ create trigger trg_users_updated_at before update on users
 -- A driver has no login — they're just a name/phone on the vehicle they
 -- currently drive (admin edits it when the driver changes). Office staff key in
 -- each vehicle's paper note at end of day; deliveries, payments and customer
--- assignment are then tracked against the vehicle. Never hard-deleted —
--- deliveries reference it — so a vehicle is retired by setting status inactive.
+-- assignment are then tracked against the vehicle. status 'inactive' retires a
+-- vehicle still in use elsewhere; deleting one goes through Trash below.
 
 create table if not exists vehicles (
   id uuid primary key default gen_random_uuid(),
@@ -164,11 +185,24 @@ create table if not exists vehicles (
   updated_at timestamptz not null default now()
 );
 
+-- Soft delete (Trash — see trash.controller.js), same convention as users
+-- above: deleted_at null means active.
+alter table vehicles add column if not exists deleted_at timestamptz;
+alter table vehicles add column if not exists deleted_by uuid references users(id) on delete set null;
+-- Set once a Trashed vehicle has been resolved for good (see
+-- trash.controller.js's anonymize) — vehicle_number/driver details
+-- overwritten with a placeholder, same reasoning as users.anonymized_at above.
+alter table vehicles add column if not exists anonymized_at timestamptz;
+
 create index if not exists idx_vehicles_organization_id on vehicles(organization_id);
--- One vehicle number per org. Case/space/hyphen differences are normalised by
--- the controller (upper-cased, whitespace and hyphens stripped) before insert,
--- so "ka 01 ab-1234" and "KA01AB1234" collide here as they should.
-create unique index if not exists idx_vehicles_org_number_unique on vehicles(organization_id, vehicle_number);
+create index if not exists idx_vehicles_deleted_at on vehicles(deleted_at) where deleted_at is not null;
+-- One vehicle number per org, among non-deleted vehicles — a trashed vehicle
+-- must not block reusing its number for a new one. Case/space/hyphen
+-- differences are normalised by the controller (upper-cased, whitespace and
+-- hyphens stripped) before insert, so "ka 01 ab-1234" and "KA01AB1234"
+-- collide here as they should.
+drop index if exists idx_vehicles_org_number_unique;
+create unique index if not exists idx_vehicles_org_number_unique on vehicles(organization_id, vehicle_number) where deleted_at is null;
 
 drop trigger if exists trg_vehicles_updated_at on vehicles;
 create trigger trg_vehicles_updated_at before update on vehicles
@@ -225,10 +259,19 @@ alter table customers add column if not exists portal_token uuid unique;
 -- them instead of to a staff member (assigned_staff_id, which stays for
 -- 'route_staff' orgs). Powers the vehicle-wise pending-dues breakdown.
 alter table customers add column if not exists assigned_vehicle_id uuid references vehicles(id) on delete set null;
+-- Soft delete (Trash — see trash.controller.js), same convention as users/
+-- vehicles above: deleted_at null means active.
+alter table customers add column if not exists deleted_at timestamptz;
+alter table customers add column if not exists deleted_by uuid references users(id) on delete set null;
+-- Set once a Trashed customer has been resolved for good (see
+-- trash.controller.js's anonymize) — name/phone/address overwritten with a
+-- placeholder, same reasoning as users.anonymized_at above.
+alter table customers add column if not exists anonymized_at timestamptz;
 
 create index if not exists idx_customers_organization_id on customers(organization_id);
 create index if not exists idx_customers_assigned_staff_id on customers(assigned_staff_id);
 create index if not exists idx_customers_assigned_vehicle_id on customers(assigned_vehicle_id);
+create index if not exists idx_customers_deleted_at on customers(deleted_at) where deleted_at is not null;
 
 -- A customer doesn't have one fixed delivery location — where a delivery
 -- happens is recorded per-delivery instead (see deliveries.place below).
@@ -245,42 +288,48 @@ declare
   dup record;
   keeper_id uuid;
 begin
+  -- Scoped to non-deleted customers only — otherwise an active customer who
+  -- legitimately reused a trashed customer's old phone number would look like
+  -- a duplicate of that unrelated trashed row and get wrongly merged into it.
   for dup in
     select organization_id, phone
     from customers
-    where phone is not null
+    where phone is not null and deleted_at is null
     group by organization_id, phone
     having count(*) > 1
   loop
     select id into keeper_id
     from customers
-    where organization_id = dup.organization_id and phone = dup.phone
+    where organization_id = dup.organization_id and phone = dup.phone and deleted_at is null
     order by created_at asc
     limit 1;
 
     update deliveries set customer_id = keeper_id
     where customer_id in (
       select id from customers
-      where organization_id = dup.organization_id and phone = dup.phone and id <> keeper_id
+      where organization_id = dup.organization_id and phone = dup.phone and deleted_at is null and id <> keeper_id
     );
 
     update payments set customer_id = keeper_id
     where customer_id in (
       select id from customers
-      where organization_id = dup.organization_id and phone = dup.phone and id <> keeper_id
+      where organization_id = dup.organization_id and phone = dup.phone and deleted_at is null and id <> keeper_id
     );
 
     delete from customers
-    where organization_id = dup.organization_id and phone = dup.phone and id <> keeper_id;
+    where organization_id = dup.organization_id and phone = dup.phone and deleted_at is null and id <> keeper_id;
   end loop;
 end $$;
 
--- One phone number = one customer per org. Partial (phone is not null) so
--- customers without a phone on file don't collide with each other. This is
--- the backstop against the duplicate-customer bug above — see
--- resolveCustomerId in delivery.controller.js, which now looks up by phone
--- before inserting instead of always creating a new row.
-create unique index if not exists idx_customers_org_phone_unique on customers(organization_id, phone) where phone is not null;
+-- One phone number = one customer per org, among non-deleted customers.
+-- Partial (phone is not null) so customers without a phone on file don't
+-- collide with each other, and (deleted_at is null) so a trashed customer
+-- doesn't block reusing their phone number for a new one. This is also the
+-- backstop against the duplicate-customer bug above — see resolveCustomerId
+-- in delivery.controller.js, which now looks up by phone before inserting
+-- instead of always creating a new row.
+drop index if exists idx_customers_org_phone_unique;
+create unique index if not exists idx_customers_org_phone_unique on customers(organization_id, phone) where phone is not null and deleted_at is null;
 
 drop trigger if exists trg_customers_updated_at on customers;
 create trigger trg_customers_updated_at before update on customers
@@ -304,7 +353,17 @@ create table if not exists products (
   updated_at timestamptz not null default now()
 );
 
+-- Soft delete (Trash — see trash.controller.js), same convention as users/
+-- vehicles/customers above: deleted_at null means active.
+alter table products add column if not exists deleted_at timestamptz;
+alter table products add column if not exists deleted_by uuid references users(id) on delete set null;
+-- Set once a Trashed product has been resolved for good (see
+-- trash.controller.js's anonymize) — name overwritten with a placeholder,
+-- same reasoning as users.anonymized_at above.
+alter table products add column if not exists anonymized_at timestamptz;
+
 create index if not exists idx_products_organization_id on products(organization_id);
+create index if not exists idx_products_deleted_at on products(deleted_at) where deleted_at is not null;
 
 -- Null means low-stock alerting is off for this product (most orgs don't
 -- track stock at all — see stock.controller.js, which only compares against
@@ -916,6 +975,37 @@ begin
   returning id into v_payment_id;
 
   return query select v_payment_id;
+end;
+$$ language plpgsql;
+
+-- Trash: force-delete a staff member ----------------------------------------
+-- Every `references users(id)` column with no on-delete clause blocks a
+-- plain delete on whoever it points to, regardless of whether the column
+-- itself is nullable — nullable just means it CAN be cleared, not that
+-- Postgres clears it automatically. That covers two groups here:
+--   not null, so the referencing row has to go: deliveries.staff_id,
+--   payments.recorded_by, credit_notes.issued_by, route_skips.staff_id,
+--   price_history.changed_by.
+--   nullable, so the reference is cleared and the row survives:
+--   credit_notes.voided_by, customer_deposits.created_by,
+--   stock_movements.recorded_by, place_dismissals.dismissed_by.
+-- The Trash page's guarded permanent delete (trash.controller.js) already
+-- blocks on all of the above (its staff guards list); this function is what
+-- its "delete everything permanently" follow-up option calls instead of
+-- leaving the record stuck. One function so a failure partway through can't
+-- leave some of this deleted and the rest not.
+create or replace function force_delete_staff(p_staff_id uuid, p_organization_id uuid) returns void as $$
+begin
+  update credit_notes set voided_by = null where voided_by = p_staff_id and organization_id = p_organization_id;
+  update customer_deposits set created_by = null where created_by = p_staff_id and organization_id = p_organization_id;
+  update stock_movements set recorded_by = null where recorded_by = p_staff_id and organization_id = p_organization_id;
+  update place_dismissals set dismissed_by = null where dismissed_by = p_staff_id and organization_id = p_organization_id;
+  delete from route_skips where staff_id = p_staff_id and organization_id = p_organization_id;
+  delete from credit_notes where issued_by = p_staff_id and organization_id = p_organization_id;
+  delete from payments where recorded_by = p_staff_id and organization_id = p_organization_id;
+  delete from price_history where changed_by = p_staff_id and organization_id = p_organization_id;
+  delete from deliveries where staff_id = p_staff_id and organization_id = p_organization_id;
+  delete from users where id = p_staff_id and organization_id = p_organization_id;
 end;
 $$ language plpgsql;
 

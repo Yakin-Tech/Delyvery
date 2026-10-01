@@ -14,7 +14,7 @@ const { isLitreUnit } = require('../utils/units');
 const list = asyncHandler(async (req, res) => {
   const { include_inactive } = req.query;
   const pg = parsePagination(req.query);
-  let query = supabase.from('products').select('*', { count: 'exact' }).eq('organization_id', requireOrgId(req));
+  let query = supabase.from('products').select('*', { count: 'exact' }).eq('organization_id', requireOrgId(req)).is('deleted_at', null);
   if (!include_inactive) query = query.eq('is_active', true);
   const { data, count } = unwrapPage(await query.order('name', { ascending: true }).range(pg.from, pg.to));
   res.json(pg.buildResult(data, count));
@@ -42,7 +42,7 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  const existing = unwrap(await supabase.from('products').select('*').eq('id', req.params.id).maybeSingle());
+  const existing = unwrap(await supabase.from('products').select('*').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, existing);
 
   const { name, unit_of_measure, default_price, is_active, reorder_level, default_quantity } = req.body;
@@ -80,8 +80,20 @@ const update = asyncHandler(async (req, res) => {
   res.json(product);
 });
 
+// Moves a product to Trash (see trash.controller.js) instead of deleting it
+// outright — is_active is still how a product is normally retired day-to-day
+// (it stays pickable in historical views, just hidden from new deliveries);
+// this is for removing one from the catalog entirely, reversibly.
+const remove = asyncHandler(async (req, res) => {
+  const existing = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
+  assertSameOrg(req, existing);
+
+  unwrap(await supabase.from('products').update({ deleted_at: new Date().toISOString(), deleted_by: req.user.id }).eq('id', existing.id));
+  res.json({ success: true });
+});
+
 const priceHistory = asyncHandler(async (req, res) => {
-  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.id).maybeSingle());
+  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, product);
 
   const history = unwrap(await supabase
@@ -99,7 +111,7 @@ const priceHistory = asyncHandler(async (req, res) => {
 // financial history, so it's a separate, explicit action from the normal
 // price change above — never automatic.
 const applyPriceRetroactively = asyncHandler(async (req, res) => {
-  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.id).maybeSingle());
+  const product = unwrap(await supabase.from('products').select('id, organization_id').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, product);
 
   const { new_price, date_from, date_to } = req.body;
@@ -137,4 +149,4 @@ const applyPriceRetroactively = asyncHandler(async (req, res) => {
   res.json({ updated_deliveries: updatedCount });
 });
 
-module.exports = { list, create, update, priceHistory, applyPriceRetroactively };
+module.exports = { list, create, update, remove, priceHistory, applyPriceRetroactively };

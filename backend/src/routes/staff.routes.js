@@ -12,6 +12,7 @@ router.use(authenticate, requireRole('org_admin'));
 router.get('/', staffController.list);
 router.post('/', staffValidator.createStaff, validate, staffController.create);
 router.patch('/:id', staffValidator.updateStaff, validate, staffController.update);
+router.delete('/:id', staffController.remove);
 router.post('/:id/reset-password', staffValidator.resetPassword, validate, staffController.resetPassword);
 
 module.exports = router;

@@ -7,7 +7,8 @@ const asyncHandler = require('../utils/asyncHandler');
 // Also attaches req.organization for org_admin/staff so controllers can read org-level
 // settings (staff_sees_all_customers, unit, default price) without a fresh query each time.
 // Re-fetches the user on every request (rather than trusting the token payload alone)
-// so a deactivated user is rejected immediately instead of waiting for token expiry.
+// so a deactivated — or, same idea, Trashed (see trash.controller.js) — user is
+// rejected immediately instead of waiting for token expiry.
 const authenticate = asyncHandler(async (req, res, next) => {
   const header = req.headers.authorization || '';
   const [scheme, token] = header.split(' ');
@@ -25,12 +26,12 @@ const authenticate = asyncHandler(async (req, res, next) => {
 
   const { data: user, error } = await supabase
     .from('users')
-    .select('id, organization_id, role, name, phone, status')
+    .select('id, organization_id, role, name, phone, status, deleted_at')
     .eq('id', payload.sub)
     .maybeSingle();
 
   if (error) throw new ApiError(500, error.message);
-  if (!user || user.status !== 'active') {
+  if (!user || user.status !== 'active' || user.deleted_at) {
     throw ApiError.unauthorized('Account not found or inactive');
   }
 

@@ -17,6 +17,7 @@ const list = asyncHandler(async (req, res) => {
     .select(STAFF_FIELDS, { count: 'exact' })
     .eq('organization_id', requireOrgId(req))
     .eq('role', 'staff')
+    .is('deleted_at', null)
     .order('name', { ascending: true })
     .range(pg.from, pg.to));
 
@@ -26,7 +27,9 @@ const list = asyncHandler(async (req, res) => {
 const create = asyncHandler(async (req, res) => {
   const { name, phone, password, assigned_zone, preferred_language } = req.body;
 
-  const existing = unwrap(await supabase.from('users').select('id').eq('phone', phone).maybeSingle());
+  // Only among non-deleted users — phone is free to reuse once its previous
+  // owner has been moved to Trash (see the partial unique index in schema.sql).
+  const existing = unwrap(await supabase.from('users').select('id').eq('phone', phone).is('deleted_at', null).maybeSingle());
   if (existing) throw ApiError.conflict('A user with this phone number already exists');
 
   const password_hash = await hashPassword(password);
@@ -45,7 +48,7 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const update = asyncHandler(async (req, res) => {
-  const existing = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', req.params.id).maybeSingle());
+  const existing = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, existing);
   if (existing.role !== 'staff') throw ApiError.notFound('Staff member not found');
 
@@ -60,8 +63,26 @@ const update = asyncHandler(async (req, res) => {
   res.json(staff);
 });
 
+// Moves a staff member to Trash (see trash.controller.js) instead of deleting
+// them outright — status 'inactive' is still how a staff member is normally
+// taken off active duty day-to-day; this is for removing one from the list
+// entirely, reversibly, and always succeeds — any customers still assigned
+// to them, or delivery/payment history, get resolved from the Trash page
+// instead (its guarded permanent-delete, with "delete everything" / "keep
+// history, remove details" follow-ups). A Trashed staff member can no longer
+// log in (see middleware/auth.js and auth.controller.js), so they can't act
+// on anything still pointing at them in the meantime.
+const remove = asyncHandler(async (req, res) => {
+  const existing = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
+  assertSameOrg(req, existing);
+  if (existing.role !== 'staff') throw ApiError.notFound('Staff member not found');
+
+  unwrap(await supabase.from('users').update({ deleted_at: new Date().toISOString(), deleted_by: req.user.id }).eq('id', existing.id));
+  res.json({ success: true });
+});
+
 const resetPassword = asyncHandler(async (req, res) => {
-  const existing = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', req.params.id).maybeSingle());
+  const existing = unwrap(await supabase.from('users').select('id, organization_id, role').eq('id', req.params.id).is('deleted_at', null).maybeSingle());
   assertSameOrg(req, existing);
   if (existing.role !== 'staff') throw ApiError.notFound('Staff member not found');
 
@@ -71,4 +92,4 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.json({ success: true });
 });
 
-module.exports = { list, create, update, resetPassword };
+module.exports = { list, create, update, remove, resetPassword };

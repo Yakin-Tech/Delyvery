@@ -59,7 +59,8 @@
     "onboardingFunnel": "ऑनबोर्डिंग फ़नल",
     "auditLog": "ऑडिट लॉग",
     "vehicles": "वाहन",
-    "vehicleEod": "वाहन दिन-अंत प्रविष्टि"
+    "vehicleEod": "वाहन दिन-अंत प्रविष्टि",
+    "trash": "ट्रैश"
   },
   "roles": {
     "super_admin": "सुपर एडमिन",
@@ -164,6 +165,8 @@
     },
     "detail": {
       "editCustomer": "ग्राहक संपादित करें",
+      "deleteCustomer": "ग्राहक हटाएं",
+      "deleteConfirm": "{{name}} को ट्रैश में भेजें? आप उन्हें बाद में वापस ला सकते हैं।",
       "recordDelivery": "डिलीवरी दर्ज करें",
       "recordPayment": "भुगतान दर्ज करें",
       "whatsapp": "WhatsApp",
@@ -218,6 +221,7 @@
     "resetPassword": "पासवर्ड रीसेट करें",
     "deactivate": "निष्क्रिय करें",
     "activate": "सक्रिय करें",
+    "deleteConfirm": "{{name}} को ट्रैश में भेजें? आप उन्हें बाद में वापस ला सकते हैं।",
     "columns": {
       "name": "नाम",
       "phone": "फ़ोन",
@@ -868,6 +872,7 @@
     "title": "उत्पाद",
     "addProduct": "उत्पाद जोड़ें",
     "empty": "अभी तक कोई उत्पाद नहीं है।",
+    "deleteConfirm": "{{name}} को ट्रैश में भेजें? आप इसे बाद में वापस ला सकते हैं।",
     "columns": {
       "name": "नाम",
       "unit": "इकाई",
@@ -895,6 +900,34 @@
     "retroWarning": "यह आपके चुने गए दिनांक सीमा में पहले से दर्ज डिलीवरी की कीमत बदल देगा, और उनकी कुल राशि व भुगतान स्थिति फिर से गणना करेगा। इसे वापस नहीं किया जा सकता — केवल वास्तविक कीमत सुधार के लिए उपयोग करें।",
     "retroSuccess": "{{count}} डिलीवरी अपडेट की गईं।",
     "confirmRetroactive": "पिछली डिलीवरी पर लागू करें"
+  },
+  "trash": {
+    "title": "ट्रैश",
+    "empty": "ट्रैश खाली है।",
+    "hint": "हटाए गए वाहन, कर्मचारी, ग्राहक और उत्पाद यहां तब तक रहते हैं जब तक आप उन्हें वापस नहीं लाते या स्थायी रूप से नहीं हटाते।",
+    "columns": {
+      "type": "प्रकार",
+      "name": "नाम",
+      "deletedAt": "हटाया गया",
+      "deletedBy": "हटाने वाला"
+    },
+    "types": {
+      "vehicle": "वाहन",
+      "staff": "कर्मचारी",
+      "customer": "ग्राहक",
+      "product": "उत्पाद"
+    },
+    "filterAll": "सभी प्रकार",
+    "restore": "वापस लाएं",
+    "deletePermanently": "स्थायी रूप से हटाएं",
+    "deletePermanentlyConfirm": "{{name}} को स्थायी रूप से हटाएं? यह वापस नहीं किया जा सकता।",
+    "deletePermanentlyHint": "अगर इसका अभी भी डिलीवरी या भुगतान इतिहास है, तो यह सीधे विफल होने के बजाय आपसे पूछा जाएगा कि इसे कैसे हल करें।",
+    "resolveTitle": "{{name}} को पूरी तरह हटाया नहीं जा सकता",
+    "resolveMessage": "{{name}} का अभी भी डिलीवरी या भुगतान इतिहास है, इसलिए इसे अभी स्थायी रूप से हटाया नहीं जा सकता। आगे कैसे बढ़ना है चुनें:",
+    "resolveAnonymize": "इतिहास रखें, विवरण हटाएं",
+    "resolveAnonymizeHint": "पिछली डिलीवरी और भुगतान बिल्कुल वैसे ही रहेंगे, लेकिन {{name}} का नाम और संपर्क विवरण हर जगह \"हटाया गया {{type}}\" से बदल दिया जाएगा।",
+    "resolveForceDelete": "सब कुछ स्थायी रूप से हटाएं",
+    "resolveForceDeleteHint": "{{name}} और उनके सभी डिलीवरी, भुगतान व संबंधित इतिहास को स्थायी रूप से हटा देता है। यह वापस नहीं किया जा सकता।"
   },
   "deposits": {
     "title": "सुरक्षा जमा",
@@ -966,6 +999,7 @@
     "empty": "अभी तक कोई वाहन नहीं जोड़ा गया।",
     "activate": "सक्रिय करें",
     "deactivate": "निष्क्रिय करें",
+    "deleteConfirm": "वाहन {{number}} को ट्रैश में भेजें? आप इसे बाद में वापस ला सकते हैं।",
     "columns": {
       "number": "वाहन नंबर",
       "label": "लेबल",
@@ -1272,8 +1306,15 @@
     "that_delivery_does_not_belong_to_this_customer": "वह डिलीवरी इस ग्राहक की नहीं है",
     "this_credit_note_is_already_voided": "यह क्रेडिट नोट पहले ही रद्द किया जा चुका है",
     "this_customer_is_not_assigned_to_you": "यह ग्राहक आपको असाइन नहीं है",
+    "this_customer_still_has_delivery_or_payment_history_and_cannot_be_permanently_deleted": "इस ग्राहक का अभी भी डिलीवरी या भुगतान इतिहास है और इसे स्थायी रूप से हटाया नहीं जा सकता।",
     "this_is_not_available_for_your_organization": "यह आपके संगठन के लिए उपलब्ध नहीं है",
+    "this_item_is_not_in_trash": "यह आइटम ट्रैश में नहीं है",
     "this_link_is_no_longer_valid": "यह लिंक अब मान्य नहीं है।",
+    "this_product_still_has_delivery_or_stock_history_and_cannot_be_permanently_deleted": "इस उत्पाद का अभी भी डिलीवरी या स्टॉक इतिहास है और इसे स्थायी रूप से हटाया नहीं जा सकता।",
+    "this_staff_member_has_customers_assigned_to_them_reassign_them_before_removing_them": "इस कर्मचारी को ग्राहक सौंपे गए हैं। हटाने से पहले उन्हें फिर से असाइन करें।",
+    "this_staff_member_still_has_delivery_or_payment_history_and_cannot_be_permanently_deleted": "इस कर्मचारी का अभी भी डिलीवरी या भुगतान इतिहास है और इसे स्थायी रूप से हटाया नहीं जा सकता।",
+    "this_vehicle_has_customers_assigned_to_it_reassign_them_before_removing_it": "इस वाहन को ग्राहक सौंपे गए हैं। हटाने से पहले उन्हें फिर से असाइन करें।",
+    "this_vehicle_still_has_delivery_or_payment_history_and_cannot_be_permanently_deleted": "इस वाहन का अभी भी डिलीवरी या भुगतान इतिहास है और इसे स्थायी रूप से हटाया नहीं जा सकता।",
     "total_amount_must_be_a_non_negative_number": "कुल राशि ऋणात्मक नहीं हो सकती",
     "unit_price_must_be_a_non_negative_number": "प्रति इकाई कीमत ऋणात्मक नहीं हो सकती",
     "user_not_found": "उपयोगकर्ता नहीं मिला",

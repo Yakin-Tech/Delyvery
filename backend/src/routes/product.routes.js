@@ -12,6 +12,7 @@ router.use(authenticate, requireRole('org_admin', 'staff'));
 router.get('/', productController.list);
 router.post('/', requireRole('org_admin'), productValidator.createProduct, validate, productController.create);
 router.patch('/:id', requireRole('org_admin'), productValidator.updateProduct, validate, productController.update);
+router.delete('/:id', requireRole('org_admin'), productController.remove);
 router.get('/:id/price-history', requireRole('org_admin'), productController.priceHistory);
 router.post('/:id/apply-price-retroactively', requireRole('org_admin'), productValidator.applyPriceRetroactively, validate, productController.applyPriceRetroactively);
 
