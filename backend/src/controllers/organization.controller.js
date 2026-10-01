@@ -4,15 +4,15 @@ const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const unwrap = require('../utils/unwrap');
 
-// name/business_type/status are Super-Admin-owned identity fields — org_admin
-// can see them but only these operational fields are editable here.
+// name/business_type/status/app_name/logo_url are Super-Admin-owned identity
+// and branding fields — org_admin can see them but only these operational
+// fields are editable here.
 const EDITABLE_FIELDS = [
   'unit_of_measure',
   'default_price_per_unit',
   'address',
   'phone_numbers',
   'delivery_modes',
-  'logo_url',
   'staff_sees_all_customers',
   'staff_can_add_customers',
   'payment_allocation_mode',

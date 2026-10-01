@@ -104,6 +104,12 @@ alter table organizations add column if not exists stock_enabled boolean not nul
 -- pre-existing org stays on 'route_staff', so nothing changes for them.
 alter table organizations add column if not exists delivery_model delivery_model_enum not null default 'route_staff';
 
+-- Per-org branding, Super-Admin-owned like logo_url (see superAdmin.controller.js
+-- updateOrganization). Null means "use the platform default" — the Delyver name
+-- and logo — which is also what every pre-existing org gets on this backfill.
+-- Set app_name equal to the org's name to brand it without showing both.
+alter table organizations add column if not exists app_name text;
+
 drop trigger if exists trg_organizations_updated_at on organizations;
 create trigger trg_organizations_updated_at before update on organizations
   for each row execute function set_updated_at();

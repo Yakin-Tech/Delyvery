@@ -58,6 +58,9 @@ export default function OrganizationDetailPage() {
       business_type_other: isKnownType ? '' : org.business_type,
       address: org.address || '',
       phone: (org.phone_numbers && org.phone_numbers[0]) || '',
+      app_name: org.app_name || '',
+      same_as_org_name: !!org.app_name && org.app_name === org.name,
+      logo_url: org.logo_url || '',
     });
     setEditing(true);
   }
@@ -70,6 +73,8 @@ export default function OrganizationDetailPage() {
       business_type,
       address: editForm.address,
       phone_numbers: editForm.phone ? [editForm.phone] : [],
+      app_name: editForm.same_as_org_name ? editForm.name : (editForm.app_name.trim() || null),
+      logo_url: editForm.logo_url.trim() || null,
     });
     setEditing(false);
     await load();
@@ -168,6 +173,13 @@ export default function OrganizationDetailPage() {
           <div>{businessTypeLabel(organization.business_type, t)}</div>
         </div>
         <div>
+          <div className="mutedText">{t('superAdmin.orgDetail.branding')}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {organization.logo_url && <img src={organization.logo_url} alt="" style={{ width: 20, height: 20, objectFit: 'contain' }} />}
+            {organization.app_name || t('superAdmin.orgDetail.brandingDefault')}
+          </div>
+        </div>
+        <div>
           <div className="mutedText">{t('superAdmin.orgDetail.address')}</div>
           <div>{organization.address || '—'}</div>
         </div>
@@ -240,6 +252,28 @@ export default function OrganizationDetailPage() {
               <TextInput label={t('superAdmin.organizations.modal.phoneNumber')} value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
             </div>
             <TextInput label={t('common.address')} value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} style={{ marginTop: 16 }} />
+
+            <h2 style={{ marginTop: 24 }}>{t('superAdmin.orgDetail.branding')}</h2>
+            <p className="mutedText" style={{ marginTop: -8, marginBottom: 12 }}>{t('superAdmin.orgDetail.appNameHint')}</p>
+            <div className="formGrid">
+              <TextInput
+                label={t('superAdmin.orgDetail.appName')}
+                placeholder="Delyver"
+                disabled={editForm.same_as_org_name}
+                value={editForm.same_as_org_name ? editForm.name : editForm.app_name}
+                onChange={(e) => setEditForm({ ...editForm, app_name: e.target.value })}
+              />
+              <TextInput label={t('superAdmin.orgDetail.logoUrl')} value={editForm.logo_url} onChange={(e) => setEditForm({ ...editForm, logo_url: e.target.value })} />
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+              <input
+                type="checkbox"
+                checked={editForm.same_as_org_name}
+                onChange={(e) => setEditForm({ ...editForm, same_as_org_name: e.target.checked })}
+              />
+              {t('superAdmin.orgDetail.sameAsOrgName')}
+            </label>
+
             <div className="formActions">
               <Button type="submit">{t('common.save')}</Button>
               <Button type="button" variant="secondary" onClick={() => setEditing(false)}>{t('common.cancel')}</Button>

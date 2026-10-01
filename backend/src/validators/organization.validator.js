@@ -6,7 +6,6 @@ const updateOwnOrganization = [
   body('address').optional({ nullable: true }).trim(),
   body('phone_numbers').optional().isArray().withMessage('phone_numbers must be an array'),
   body('delivery_modes').optional().isArray().withMessage('delivery_modes must be an array'),
-  body('logo_url').optional({ nullable: true }).trim(),
   body('staff_sees_all_customers').optional().isBoolean().withMessage('Must be true or false'),
   body('staff_can_add_customers').optional().isBoolean().withMessage('Must be true or false'),
   body('payment_allocation_mode').optional().isIn(['fifo', 'manual']).withMessage('Must be fifo or manual'),

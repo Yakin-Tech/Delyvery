@@ -18,6 +18,8 @@ const updateOrganization = [
   body('phone_numbers').optional().isArray().withMessage('phone_numbers must be an array'),
   body('status').optional().isIn(['trial', 'active', 'suspended', 'expired']).withMessage('Invalid status'),
   body('delivery_model').optional().isIn(['route_staff', 'vehicle_eod']).withMessage('Invalid delivery model'),
+  body('app_name').optional({ nullable: true }).trim(),
+  body('logo_url').optional({ nullable: true }).trim(),
 ];
 
 const createOrgAdmin = [

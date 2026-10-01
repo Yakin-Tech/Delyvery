@@ -62,6 +62,12 @@ export default function AppLayout() {
   const navItems = (NAV_ITEMS[user.role] || []).filter((item) => (
     (!item.moduleFlag || organization?.[item.moduleFlag]) && (!item.visible || item.visible(organization))
   ));
+  // Every org starts branded as "Delyver" with the platform logo (app_name/
+  // logo_url null) until the Super Admin sets its own — see
+  // OrganizationDetailPage.jsx. When the Super Admin sets app_name equal to
+  // the org's name, showing the org name underneath would just repeat it.
+  const brandName = organization?.app_name || 'Delyver';
+  const showOrgName = organization && organization.name !== brandName;
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
@@ -76,10 +82,12 @@ export default function AppLayout() {
 
       <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''} no-print`}>
         <div className={styles.brand}>
-          <Logo className={styles.brandMark} />
+          {organization?.logo_url
+            ? <img src={organization.logo_url} alt={brandName} className={styles.brandMark} />
+            : <Logo className={styles.brandMark} />}
           <div>
-            <div className={styles.brandName}>Delyver</div>
-            {organization && <div className={styles.orgName}>{organization.name}</div>}
+            <div className={styles.brandName}>{brandName}</div>
+            {showOrgName && <div className={styles.orgName}>{organization.name}</div>}
           </div>
         </div>
         <nav className={styles.nav}>

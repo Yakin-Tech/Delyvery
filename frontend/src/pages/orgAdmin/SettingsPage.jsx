@@ -32,7 +32,6 @@ export default function SettingsPage() {
         default_price_per_unit: org.default_price_per_unit ?? '',
         address: org.address || '',
         phone: (org.phone_numbers && org.phone_numbers[0]) || '',
-        logo_url: org.logo_url || '',
         delivery_modes: org.delivery_modes || [],
         staff_sees_all_customers: org.staff_sees_all_customers,
         staff_can_add_customers: org.staff_can_add_customers,
@@ -70,7 +69,6 @@ export default function SettingsPage() {
         default_price_per_unit: form.default_price_per_unit,
         address: form.address,
         phone_numbers: form.phone ? [form.phone] : [],
-        logo_url: form.logo_url || null,
         delivery_modes: form.delivery_modes,
         staff_sees_all_customers: form.staff_sees_all_customers,
         staff_can_add_customers: form.staff_can_add_customers,
@@ -106,6 +104,11 @@ export default function SettingsPage() {
         <p style={{ marginTop: 8 }}>
           <strong>{organization.name}</strong> &middot; {businessTypeLabel(organization.business_type, t)}
         </p>
+        <div className="mutedText" style={{ marginTop: 16 }}>{t('settings.brandingLabel')}</div>
+        <p style={{ marginTop: 8, marginBottom: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          {organization.logo_url && <img src={organization.logo_url} alt="" style={{ width: 20, height: 20, objectFit: 'contain' }} />}
+          <strong>{organization.app_name || t('settings.brandingDefault')}</strong>
+        </p>
         <div className="mutedText" style={{ marginTop: 16 }}>{t('settings.deliveryModelLabel')}</div>
         <p style={{ marginTop: 8, marginBottom: 4 }}>
           <strong>{vehicleOrg ? t('settings.deliveryModelVehicleEod') : t('settings.deliveryModelRouteStaff')}</strong>
@@ -138,7 +141,6 @@ export default function SettingsPage() {
             onChange={(e) => setForm({ ...form, default_price_per_unit: e.target.value })}
           />
           <TextInput label={t('settings.phoneNumber')} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-          <TextInput label={t('settings.logoUrl')} value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} />
         </div>
         <TextInput label={t('common.address')} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} style={{ marginTop: 16 }} />
 

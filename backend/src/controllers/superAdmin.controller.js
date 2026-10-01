@@ -152,7 +152,7 @@ const updateOrganization = asyncHandler(async (req, res) => {
   const existing = unwrap(await supabase.from('organizations').select('*').eq('id', req.params.id).maybeSingle());
   if (!existing) throw ApiError.notFound('Organization not found');
 
-  const fields = ['name', 'business_type', 'address', 'phone_numbers', 'status', 'delivery_model'];
+  const fields = ['name', 'business_type', 'address', 'phone_numbers', 'status', 'delivery_model', 'app_name', 'logo_url'];
   const patch = {};
   for (const field of fields) {
     if (req.body[field] !== undefined) patch[field] = req.body[field];
