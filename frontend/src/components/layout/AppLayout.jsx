@@ -68,6 +68,21 @@ export default function AppLayout() {
   // the org's name, showing the org name underneath would just repeat it.
   const brandName = organization?.app_name || 'Delyver';
   const showOrgName = organization && organization.name !== brandName;
+  const faviconHref = organization?.logo_url || `${process.env.PUBLIC_URL}/logo.svg`;
+
+  // Browser tab title/icon follow the same branding as the sidebar above.
+  // index.html only sets the Delyver defaults once at load, so the cleanup
+  // here restores them on logout (AppLayout unmounting back to Login) —
+  // otherwise a signed-out tab would keep showing the last org's branding.
+  useEffect(() => {
+    document.title = brandName;
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon) favicon.href = faviconHref;
+    return () => {
+      document.title = 'Delyver';
+      if (favicon) favicon.href = `${process.env.PUBLIC_URL}/logo.svg`;
+    };
+  }, [brandName, faviconHref]);
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
