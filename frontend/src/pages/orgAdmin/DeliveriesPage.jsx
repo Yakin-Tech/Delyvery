@@ -131,13 +131,13 @@ export default function DeliveriesPage() {
   const columns = [
     { key: 'delivery_date', header: t('deliveries.columns.date'), render: (r) => formatDate(r.delivery_date) },
     { key: 'customer', header: t('deliveries.columns.customer'), render: (r) => (r.customer ? <Link to={`/admin/customers/${r.customer.id}`}>{r.customer.name}</Link> : '—') },
-    { key: 'product', header: t('common.product'), render: (r) => r.product?.name || '—' },
+    ...(organization?.show_product_column !== false ? [{ key: 'product', header: t('common.product'), render: (r) => r.product?.name || '—' }] : []),
     { key: 'place', header: t('common.place'), render: (r) => r.place || '—' },
     ...(vehicleOrg ? [{ key: 'vehicle', header: t('deliveries.columns.vehicle'), render: (r) => r.vehicle?.vehicle_number || '—' }] : []),
-    { key: 'staff', header: vehicleOrg ? t('deliveries.columns.enteredBy') : t('deliveries.columns.staff'), render: (r) => r.staff?.name || '—' },
+    ...(organization?.show_entered_by_column !== false ? [{ key: 'staff', header: vehicleOrg ? t('deliveries.columns.enteredBy') : t('deliveries.columns.staff'), render: (r) => r.staff?.name || '—' }] : []),
     { key: 'quantity', header: t('deliveries.columns.qty') },
     { key: 'total_amount', header: t('deliveries.columns.amount'), render: (r) => formatCurrency(r.total_amount) },
-    { key: 'amount_paid', header: t('deliveries.columns.paid'), render: (r) => formatCurrency(r.amount_paid) },
+    { key: 'amount_paid', header: t('deliveries.columns.paid'), render: (r) => formatCurrency(r.amount_paid), emphasis: true },
     { key: 'payment_status', header: t('deliveries.columns.status'), render: (r) => <Badge tone={PAYMENT_STATUS_TONE[r.payment_status]}>{t(`badges.${r.payment_status}`)}</Badge> },
     {
       key: 'actions',

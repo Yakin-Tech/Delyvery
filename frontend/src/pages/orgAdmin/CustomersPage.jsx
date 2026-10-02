@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { listCustomers, createCustomer, bulkAssignCustomers, bulkAssignCustomersToVehicle, bulkSetCustomerStatus } from '../../api/customers.api';
+import { listCustomers, createCustomer, bulkAssignCustomers, bulkAssignCustomersToVehicle, bulkSetCustomerStatus, bulkDeleteCustomers, deleteCustomer } from '../../api/customers.api';
 import { listStaff } from '../../api/staff.api';
 import { listVehicles } from '../../api/vehicles.api';
 import { useAuth } from '../../context/AuthContext';
 import { SUPPORTED_LANGUAGES } from '../../i18n';
 import { getTranslatorFor, resolveCustomerLanguage } from '../../i18n/tForLanguage';
 import Button from '../../components/common/Button';
+import IconButton, { RowActions } from '../../components/common/IconButton';
 import TextInput from '../../components/common/TextInput';
 import Select from '../../components/common/Select';
 import Modal from '../../components/common/Modal';
@@ -45,6 +46,9 @@ export default function CustomersPage() {
   const [bulkAssignTargetId, setBulkAssignTargetId] = useState('');
   const [bulkBusy, setBulkBusy] = useState(false);
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
 
   async function load(searchTerm, pageNum, currentFilters = filters, size = pageSize) {
     setLoading(true);
@@ -90,6 +94,37 @@ export default function CustomersPage() {
     try {
       await bulkSetCustomerStatus(Array.from(selectedIds), 'inactive');
       await load(search, pagination?.page || 1);
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
+  async function runBulkDelete() {
+    setDeleteError('');
+    setBulkBusy(true);
+    try {
+      await bulkDeleteCustomers(Array.from(selectedIds));
+      setConfirmBulkDelete(false);
+      // If that emptied the current page, step back one so the list isn't blank.
+      const emptied = selectedIds.size >= customers.length && (pagination?.page || 1) > 1;
+      await load(search, emptied ? pagination.page - 1 : pagination?.page || 1);
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
+  async function confirmDelete() {
+    setDeleteError('');
+    setBulkBusy(true);
+    try {
+      await deleteCustomer(deleteTarget.id);
+      setDeleteTarget(null);
+      const emptied = customers.length === 1 && (pagination?.page || 1) > 1;
+      await load(search, emptied ? pagination.page - 1 : pagination?.page || 1);
+    } catch (err) {
+      setDeleteError(err.message);
     } finally {
       setBulkBusy(false);
     }
@@ -191,6 +226,15 @@ export default function CustomersPage() {
       ? { key: 'assigned_vehicle', header: t('customers.columns.vehicle'), render: (r) => r.assigned_vehicle?.vehicle_number || '—' }
       : { key: 'assigned_staff', header: t('customers.columns.staff'), render: (r) => r.assigned_staff?.name || '—' },
     { key: 'status', header: t('customers.columns.status'), render: (r) => <Badge tone={r.status === 'active' ? 'success' : 'neutral'}>{r.status === 'active' ? t('common.active') : t('common.inactive')}</Badge> },
+    {
+      key: 'actions',
+      header: t('deliveries.columns.actions'),
+      render: (r) => (
+        <RowActions>
+          <IconButton icon="delete" label={t('common.delete')} onClick={() => { setDeleteTarget(r); setDeleteError(''); }} />
+        </RowActions>
+      ),
+    },
   ];
 
   return (
@@ -228,6 +272,7 @@ export default function CustomersPage() {
           <Button variant="secondary" disabled={bulkBusy} onClick={() => setShowBulkAssign(true)}>{vehicleOrg ? t('customers.bulk.assignVehicle') : t('customers.bulk.assignStaff')}</Button>
           <Button variant="secondary" disabled={bulkBusy} onClick={handleBulkWhatsApp}>{t('customers.bulk.sendWhatsApp')}</Button>
           <Button variant="danger" disabled={bulkBusy} onClick={() => setConfirmDeactivate(true)}>{t('customers.bulk.deactivate')}</Button>
+          <Button variant="danger" disabled={bulkBusy} onClick={() => { setDeleteError(''); setConfirmBulkDelete(true); }}>{t('customers.bulk.delete')}</Button>
           <Button variant="ghost" onClick={() => setSelectedIds(new Set())}>{t('common.cancel')}</Button>
         </div>
       )}
@@ -296,6 +341,30 @@ export default function CustomersPage() {
             </div>
           </form>
         </Modal>
+      )}
+
+      {confirmBulkDelete && (
+        <ConfirmDialog
+          message={t('customers.bulk.deleteConfirm', { count: selectedIds.size })}
+          confirmLabel={t('customers.bulk.delete')}
+          danger
+          busy={bulkBusy}
+          error={deleteError}
+          onConfirm={runBulkDelete}
+          onCancel={() => setConfirmBulkDelete(false)}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          message={t('customers.deleteConfirm', { name: deleteTarget.name })}
+          confirmLabel={t('common.delete')}
+          danger
+          busy={bulkBusy}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       )}
 
       {confirmDeactivate && (

@@ -6,7 +6,8 @@ import styles from './Table.module.css';
 // instead of a resize-listener — a table's columns just don't fit a phone
 // width thumb-friendly, but every existing caller's `columns` config (with
 // its `render`) already has everything needed to lay a row out as a card too,
-// so no call site needs to change. Pass `hideInCard` on a column (e.g. a
+// so no call site needs to change. Pass `emphasis` on a column to colour its text green so it stands out from its neighbours (e.g. the Paid
+// amount). Pass `hideInCard` on a column (e.g. a
 // redundant "actions" column already reachable by tapping the card) to leave
 // it out of the card view.
 export default function Table({ columns, rows, rowKey, emptyMessage }) {
@@ -24,7 +25,7 @@ export default function Table({ columns, rows, rowKey, emptyMessage }) {
           <thead>
             <tr>
               {columns.map((col) => (
-                <th key={col.key}>{col.header}</th>
+                <th key={col.key} className={col.emphasis ? styles.emphasis : undefined}>{col.header}</th>
               ))}
             </tr>
           </thead>
@@ -32,7 +33,7 @@ export default function Table({ columns, rows, rowKey, emptyMessage }) {
             {rows.map((row) => (
               <tr key={rowKey(row)}>
                 {columns.map((col) => (
-                  <td key={col.key}>{col.render ? col.render(row) : row[col.key]}</td>
+                  <td key={col.key} className={col.emphasis ? styles.emphasis : undefined}>{col.render ? col.render(row) : row[col.key]}</td>
                 ))}
               </tr>
             ))}

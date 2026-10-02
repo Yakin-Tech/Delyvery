@@ -12,6 +12,8 @@ const updateOwnOrganization = [
   body('products_enabled').optional().isBoolean().withMessage('Must be true or false'),
   body('routes_enabled').optional().isBoolean().withMessage('Must be true or false'),
   body('stock_enabled').optional().isBoolean().withMessage('Must be true or false'),
+  body('show_product_column').optional().isBoolean().withMessage('Must be true or false'),
+  body('show_entered_by_column').optional().isBoolean().withMessage('Must be true or false'),
 ];
 
 const updateOnboarding = [

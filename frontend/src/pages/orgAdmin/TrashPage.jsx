@@ -137,7 +137,7 @@ export default function TrashPage() {
       key: 'actions',
       header: '',
       render: (r) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <IconButton icon="restore" label={t('trash.restore')} disabled={restoringId === r.id} onClick={() => handleRestore(r)} />
           <IconButton icon="delete" label={t('trash.deletePermanently')} onClick={() => openDelete(r)} />
         </div>

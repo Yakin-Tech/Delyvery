@@ -6,6 +6,7 @@ export const listCustomerOrders = (id, params) => api.get(`/customers/${id}/orde
 export const createCustomer = (data) => api.post('/customers', data);
 export const updateCustomer = (id, data) => api.patch(`/customers/${id}`, data);
 export const deleteCustomer = (id) => api.delete(`/customers/${id}`);
+export const bulkDeleteCustomers = (customerIds) => api.post('/customers/bulk-delete', { customer_ids: customerIds });
 export const reorderCustomers = (customerIds) => api.patch('/customers/reorder', { customer_ids: customerIds });
 export const bulkAssignCustomers = (customerIds, assignedStaffId) => api.patch('/customers/bulk-assign', { customer_ids: customerIds, assigned_staff_id: assignedStaffId || null });
 export const bulkAssignCustomersToVehicle = (customerIds, assignedVehicleId) => api.patch('/customers/bulk-assign-vehicle', { customer_ids: customerIds, assigned_vehicle_id: assignedVehicleId || null });

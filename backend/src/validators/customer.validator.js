@@ -57,4 +57,9 @@ const bulkStatus = [
   body('status').isIn(['active', 'inactive']).withMessage('Invalid status'),
 ];
 
-module.exports = { createCustomer, updateCustomer, bulkAssign, bulkAssignVehicle, bulkStatus, walletTopup };
+const bulkDelete = [
+  body('customer_ids').isArray({ min: 1 }).withMessage('customer_ids must be a non-empty array'),
+  body('customer_ids.*').isUUID().withMessage('Invalid customer id'),
+];
+
+module.exports = { createCustomer, updateCustomer, bulkAssign, bulkAssignVehicle, bulkStatus, bulkDelete, walletTopup };

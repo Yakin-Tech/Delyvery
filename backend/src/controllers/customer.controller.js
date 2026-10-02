@@ -121,14 +121,14 @@ const list = asyncHandler(async (req, res) => {
   // shape pendingDues.controller.js already uses for the full ledger report;
   // this is the boolean has-dues/no-dues version for the Customers list.
   if (due_status === 'pending' || due_status === 'clear') {
-    const all = unwrap(await query.order('name', { ascending: true }));
+    const all = unwrap(await query.order('status', { ascending: true }).order('name', { ascending: true }));
     const withDue = await attachTotalDue(all);
     const filtered = withDue.filter((c) => (due_status === 'pending' ? c.total_due > 0 : c.total_due === 0));
     const page = filtered.slice(pg.from, pg.to + 1);
     return res.json(pg.buildResult(page, filtered.length));
   }
 
-  const { data, count } = unwrapPage(await query.order('name', { ascending: true }).range(pg.from, pg.to));
+  const { data, count } = unwrapPage(await query.order('status', { ascending: true }).order('name', { ascending: true }).range(pg.from, pg.to));
   // attachTotalDue costs two extra round-trips (deliveries + credit_notes) —
   // real for a full page of rows, and pure waste for a quick lookup that
   // never shows it (CustomerPicker's search-as-you-type, RouteReorderPage's
@@ -316,6 +316,17 @@ const remove = asyncHandler(async (req, res) => {
   res.json({ success: true });
 });
 
+// Bulk version of remove() for the Customers list's multi-select toolbar:
+// every selected customer goes to Trash in one update (same soft delete, so
+// each can be restored or permanently resolved from the Trash page).
+const bulkRemove = asyncHandler(async (req, res) => {
+  const { customer_ids } = req.body;
+  await assertAllInOrg(req, customer_ids);
+
+  unwrap(await supabase.from('customers').update({ deleted_at: new Date().toISOString(), deleted_by: req.user.id }).in('id', customer_ids).select('id'));
+  res.json({ deleted: customer_ids.length });
+});
+
 // Bulk-saves a new visiting order after a drag-to-reorder in Org Admin's
 // customer management. Body: { customer_ids: [id, id, ...] } in the new
 // order — each gets a route_sequence 10 apart (not 1 apart) so a future
@@ -439,4 +450,4 @@ const getPortalLink = asyncHandler(async (req, res) => {
   res.json({ portal_token: token });
 });
 
-module.exports = { list, getDetail, listOrders, create, update, remove, reorder, bulkAssign, bulkAssignVehicle, bulkStatus, walletTopup, getPortalLink };
+module.exports = { list, getDetail, listOrders, create, update, remove, bulkRemove, reorder, bulkAssign, bulkAssignVehicle, bulkStatus, walletTopup, getPortalLink };

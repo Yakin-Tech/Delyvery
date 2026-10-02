@@ -120,7 +120,7 @@ export default function VehiclesPage() {
       key: 'actions',
       header: '',
       render: (r) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <IconButton icon="edit" label={t('common.edit')} onClick={() => openEdit(r)} />
           <Button variant="ghost" onClick={() => toggleStatus(r)}>
             {r.status === 'active' ? t('vehicles.deactivate') : t('vehicles.activate')}

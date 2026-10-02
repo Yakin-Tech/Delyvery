@@ -151,7 +151,9 @@
       "deactivateConfirm": "Deactivate {{count}} customer(s)? They can be reactivated later.",
       "whatsappMessage": "Hi {{name}}, this is a reminder from us regarding your delivery account. Please reach out if you have any questions.",
       "whatsappReminderTemplate": "Dear {{name}}, your outstanding balance with {{business}} is {{amount}}. Kindly settle at your earliest convenience. – {{business}} {{phone}}",
-      "assignVehicle": "Assign vehicle"
+      "assignVehicle": "Assign vehicle",
+      "delete": "Delete",
+      "deleteConfirm": "Move {{count}} customer(s) to Trash? You can restore them later."
     },
     "modal": {
       "title": "Add customer",
@@ -213,7 +215,8 @@
         "notes": "Notes"
       },
       "assignedVehicle": "Assigned vehicle"
-    }
+    },
+    "deleteConfirm": "Move {{name}} to Trash? You can restore them later."
   },
   "staff": {
     "title": "Staff",
@@ -343,7 +346,11 @@
     "deliveryModelLabel": "Delivery model",
     "deliveryModelRouteStaff": "Live route logging",
     "deliveryModelVehicleEod": "Vehicle end-of-day entry",
-    "deliveryModelHint": "How your staff record deliveries. This is set by your platform administrator — contact them to change it."
+    "deliveryModelHint": "How your staff record deliveries. This is set by your platform administrator — contact them to change it.",
+    "deliveryColumns": "Delivery list columns",
+    "deliveryColumnsHint": "Choose which optional columns appear on the Deliveries page.",
+    "showProductColumn": "Show the Product column",
+    "showEnteredByColumn": "Show the Entered by / Staff column"
   },
   "account": {
     "appearance": "Appearance",

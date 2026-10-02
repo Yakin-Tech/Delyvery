@@ -26,6 +26,12 @@
   vertical-align: middle;
 }
 
+/* A highlighted column (col.emphasis): bold green cell text, no background (header keeps its normal colour). */
+.table td.emphasis {
+  font-weight: 600;
+  color: var(--color-tertiary-ink);
+}
+
 .table tr:last-child td {
   border-bottom: none;
 }

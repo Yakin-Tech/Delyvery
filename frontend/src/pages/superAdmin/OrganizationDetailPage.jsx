@@ -142,7 +142,7 @@ export default function OrganizationDetailPage() {
       key: 'actions',
       header: '',
       render: (r) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Button variant="ghost" onClick={() => setResetTarget(r)}>{t('superAdmin.orgDetail.resetPassword')}</Button>
           <Button variant="ghost" onClick={() => toggleAdminStatus(r)}>
             {r.status === 'active' ? t('superAdmin.orgDetail.deactivate') : t('superAdmin.orgDetail.activate')}
@@ -159,7 +159,7 @@ export default function OrganizationDetailPage() {
           <Link to="/super-admin/organizations" className="mutedText">{t('common.backTo', { page: t('superAdmin.organizations.title') })}</Link>
           <h1>{organization.name}</h1>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Button variant="secondary" onClick={startEdit}>{t('superAdmin.orgDetail.edit')}</Button>
           <Button onClick={handleImpersonate} disabled={!hasActiveAdmin}>
             {t('superAdmin.orgDetail.viewAsOrgAdmin')}

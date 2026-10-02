@@ -206,7 +206,7 @@ export default function ProductsPage() {
       key: 'actions',
       header: t('deliveries.columns.actions'),
       render: (r) => (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <IconButton icon="edit" label={t('common.edit')} onClick={() => openEdit(r)} />
           <Button variant="ghost" onClick={() => openHistory(r)}>{t('products.priceHistory')}</Button>
           <Button variant="ghost" onClick={() => openRetro(r)}>{t('products.applyRetroactively')}</Button>

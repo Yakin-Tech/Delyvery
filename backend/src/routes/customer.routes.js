@@ -14,6 +14,7 @@ router.patch('/reorder', requireRole('org_admin'), customerController.reorder);
 router.patch('/bulk-assign', requireRole('org_admin'), customerValidator.bulkAssign, validate, customerController.bulkAssign);
 router.patch('/bulk-assign-vehicle', requireRole('org_admin'), customerValidator.bulkAssignVehicle, validate, customerController.bulkAssignVehicle);
 router.patch('/bulk-status', requireRole('org_admin'), customerValidator.bulkStatus, validate, customerController.bulkStatus);
+router.post('/bulk-delete', requireRole('org_admin'), customerValidator.bulkDelete, validate, customerController.bulkRemove);
 router.get('/:id', customerController.getDetail);
 router.get('/:id/orders', customerController.listOrders);
 router.post('/', customerValidator.createCustomer, validate, customerController.create);

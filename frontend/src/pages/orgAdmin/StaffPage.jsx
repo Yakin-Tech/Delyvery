@@ -102,7 +102,7 @@ export default function StaffPage() {
       key: 'actions',
       header: '',
       render: (r) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Button variant="ghost" onClick={() => setResetTarget(r)}>{t('staff.resetPassword')}</Button>
           <Button variant="ghost" onClick={() => toggleStatus(r)}>
             {r.status === 'active' ? t('staff.deactivate') : t('staff.activate')}

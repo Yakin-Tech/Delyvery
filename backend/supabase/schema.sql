@@ -97,6 +97,10 @@ alter table organizations add column if not exists onboarding_step integer not n
 alter table organizations add column if not exists products_enabled boolean not null default false;
 alter table organizations add column if not exists routes_enabled boolean not null default false;
 alter table organizations add column if not exists stock_enabled boolean not null default false;
+-- Display preferences for the Deliveries list's optional columns (Settings).
+-- Default true so existing orgs keep seeing both columns until they opt out.
+alter table organizations add column if not exists show_product_column boolean not null default true;
+alter table organizations add column if not exists show_entered_by_column boolean not null default true;
 -- The backfill that flips these on for orgs with pre-existing module data
 -- runs near the end of this file, after the products/stock_movements tables
 -- below exist — see the "Module enable-flag backfill" comment there.

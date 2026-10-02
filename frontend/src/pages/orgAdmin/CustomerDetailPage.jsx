@@ -405,7 +405,7 @@ export default function CustomerDetailPage() {
           <Link to="/admin/customers" className="mutedText">{t('common.backTo', { page: t('customers.title') })}</Link>
           <h1>{customer.name}</h1>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Button onClick={() => setShowDelivery(true)}>{t('customers.detail.recordDelivery')}</Button>
           <Button onClick={() => setShowPayment(true)}>{t('customers.detail.recordPayment')}</Button>
           {customer.phone && (
@@ -424,7 +424,7 @@ export default function CustomerDetailPage() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <IconButton icon="edit" label={t('customers.detail.editCustomer')} onClick={startEdit} />
         <IconButton icon="delete" label={t('customers.detail.deleteCustomer')} onClick={() => { setDeleteError(''); setShowDeleteConfirm(true); }} />
         <Button variant="ghost" onClick={openDeposit}>{t('deposits.addDeposit')}</Button>

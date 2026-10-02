@@ -19,6 +19,8 @@ const EDITABLE_FIELDS = [
   'products_enabled',
   'routes_enabled',
   'stock_enabled',
+  'show_product_column',
+  'show_entered_by_column',
 ];
 
 const getOwnOrganization = asyncHandler(async (req, res) => {

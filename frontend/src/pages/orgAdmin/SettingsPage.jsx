@@ -39,6 +39,8 @@ export default function SettingsPage() {
         products_enabled: org.products_enabled,
         routes_enabled: org.routes_enabled,
         stock_enabled: org.stock_enabled,
+        show_product_column: org.show_product_column !== false,
+        show_entered_by_column: org.show_entered_by_column !== false,
       });
     }).finally(() => setLoading(false));
   }, []);
@@ -76,6 +78,8 @@ export default function SettingsPage() {
         products_enabled: form.products_enabled,
         routes_enabled: form.routes_enabled,
         stock_enabled: form.stock_enabled,
+        show_product_column: form.show_product_column,
+        show_entered_by_column: form.show_entered_by_column,
       });
       setOrganization(updated);
       updateOrganization(updated);
@@ -227,6 +231,25 @@ export default function SettingsPage() {
             onChange={(e) => setForm({ ...form, stock_enabled: e.target.checked })}
           />
           {t('settings.modulesStock')}
+        </label>
+
+        <h2 style={{ marginTop: 24 }}>{t('settings.deliveryColumns')}</h2>
+        <p className="mutedText" style={{ marginTop: -8, marginBottom: 12 }}>{t('settings.deliveryColumnsHint')}</p>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <input
+            type="checkbox"
+            checked={form.show_product_column}
+            onChange={(e) => setForm({ ...form, show_product_column: e.target.checked })}
+          />
+          {t('settings.showProductColumn')}
+        </label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <input
+            type="checkbox"
+            checked={form.show_entered_by_column}
+            onChange={(e) => setForm({ ...form, show_entered_by_column: e.target.checked })}
+          />
+          {t('settings.showEnteredByColumn')}
         </label>
 
         {!vehicleOrg && (
